@@ -29,8 +29,8 @@ use DatePeriod;
 use Spatie\Browsershot\Browsershot;
 use Auth;
 use App\Exports\NupTableExport;
-use App\Exports\EpointTableExport;
-use App\Exports\EvoucherTableExport;
+use App\Exports\EPointTableExport;
+use App\Exports\EVoucherTableExport;
 use Excel;
 
 
