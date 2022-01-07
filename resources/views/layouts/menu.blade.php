@@ -179,28 +179,6 @@
             <p>Reward Performance</p>
         </a>
     </li>
-    <li class="nav-item has-treeview {{ Request::is('report/accounting/nuppurchase*') ||  Request::is('report/accounting/nuppurchase') || Request::is('report/accounting/epoint*') ||  Request::is('report/accounting/epoint') || Request::is('report/accounting/evoucher*') ||  Request::is('report/accounting/evoucher') ? 'menu-open' : '' }}">
-        <a href="#" class="nav-link {{Request::is('report/accounting/nuppurchase*') ||  Request::is('report/accounting/nuppurchase') ||  Request::is('report/accounting/epoint*') ||  Request::is('report/accounting/epoint') || Request::is('report/accounting/evoucher*') ||  Request::is('report/accounting/evoucher') ? 'active' : '' }}">
-            <p>Accounting <i class="right fa fa-angle-down"></i>
-            </p>
-        </a>
-        <ul class="nav nav-treeview">
-            <li class="nav-item">
-                <a class="nav-link {{Request::is('report/accounting/nuppurchase*') ||  Request::is('report/accounting/nuppurchase') ? 'active' : '' }}" href="{!! route('report.accounting.nuppurchase') !!}">
-                    <p>NUP Purchase</p>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {{Request::is('report/accounting/epoint*') ||  Request::is('report/accounting/epoint') ? 'active' : '' }}" href="{!! route('report.accounting.epoint') !!}">
-                    <p>E-Point</p>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {{Request::is('report/accounting/evoucher*') ||  Request::is('report/accounting/evoucher') ? 'active' : '' }}" href="{!! route('report.accounting.evoucher') !!}">
-                    <p>E-Voucher</p>
-                </a>
-            </li>
-    </li>
     </ul>
     </li>
 

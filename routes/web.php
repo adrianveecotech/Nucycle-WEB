@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,15 +59,6 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
             Route::post('get-user-preference', 'ReportController@get_user_preference')->name('report.app_performance.get_user_preference');
         });
 
-        Route::group(['prefix' => 'accounting'], function () {
-            Route::get('nuppurchase', 'ReportController@nuppurchase_index')->name('report.accounting.nuppurchase');
-            Route::get('nuppurchase-csv', 'ReportController@export_nuppurchase_csv')->name('report.accounting.nuppurchase_csv');
-            Route::get('epoint', 'ReportController@epoint_index')->name('report.accounting.epoint');
-            Route::get('epoint-csv', 'ReportController@export_epoint_csv')->name('report.accounting.epoint_csv');
-            Route::get('evoucher', 'ReportController@evoucher_index')->name('report.accounting.evoucher');
-            Route::get('evoucher-csv', 'ReportController@export_evoucher_csv')->name('report.accounting.evoucher_csv');
-        });
-        
         Route::get('reward-performance', 'ReportController@reward_performance')->name('report.reward_performance');
         Route::get('ads-click', 'ReportController@ads_click')->name('report.ads_click');
         Route::post('get-ads-click-data', 'ReportController@get_ads_click_data')->name('report.get_ads_click_data');
