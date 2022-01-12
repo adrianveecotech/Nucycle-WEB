@@ -204,6 +204,22 @@
                                     </div>
                                     <br>
                                     <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
                                     <h3 class="text-center mt-3">Ads Campaign Report</h3>
                                     <div class="row">
                                         <div class="test col-6">

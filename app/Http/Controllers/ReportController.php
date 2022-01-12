@@ -1174,13 +1174,13 @@ class ReportController extends Controller
             if ($format == 'Month') {
                 foreach ($months[0] as  $index => $value) {
                     if ($hub_type == '') {
-                        $categoryEachMonth = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total, rc.name as name FROM (SELECT cd.weight,rt.recycle_category_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $value and year(c.created_at) = $curr_year) AS B RIGHT JOIN recycle_category rc on rc.id = B.recycle_category_id group by rc.id,rc.name order by rc.id");
+                        $categoryEachMonth = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total, rc.name as name FROM (SELECT cd.weight,rt.recycle_category_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $value and year(c.created_at) = $curr_year and c.status = 1) AS B RIGHT JOIN recycle_category rc on rc.id = B.recycle_category_id group by rc.id,rc.name order by rc.id");
 
-                        $categoryEachMonthTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id  where month(c.created_at) = $value and year(c.created_at) = $curr_year");
+                        $categoryEachMonthTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id  where month(c.created_at) = $value and year(c.created_at) = $curr_year and c.status = 1");
                     } else {
-                        $categoryEachMonth = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total, rc.name as name FROM (SELECT cd.weight,rt.recycle_category_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $value and year(c.created_at) = $curr_year and chb.type = $hub_type ) AS B RIGHT JOIN recycle_category rc on rc.id = B.recycle_category_id group by rc.id,rc.name order by rc.id");
+                        $categoryEachMonth = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total, rc.name as name FROM (SELECT cd.weight,rt.recycle_category_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $value and year(c.created_at) = $curr_year and chb.type = $hub_type and c.status = 1 ) AS B RIGHT JOIN recycle_category rc on rc.id = B.recycle_category_id group by rc.id,rc.name order by rc.id");
 
-                        $categoryEachMonthTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id  where month(c.created_at) = $value and year(c.created_at) = $curr_year and chb.type = $hub_type");
+                        $categoryEachMonthTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id  where month(c.created_at) = $value and year(c.created_at) = $curr_year and chb.type = $hub_type and c.status = 1");
                     }
                     $categoryEachMonth = array_column($categoryEachMonth, 'total');
                     $categoryEachMonthTotal = array_column($categoryEachMonthTotal, 'total')[0];
@@ -1193,13 +1193,13 @@ class ReportController extends Controller
             if ($format == 'Week') {
                 foreach ($weeks as $value) {
                     if ($hub_type == '') {
-                        $categoryEachWeek = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total , rc.name as name FROM (SELECT cd.weight,rt.recycle_category_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1]) AS B RIGHT JOIN recycle_category rc on rc.id = B.recycle_category_id group by rc.id,rc.name order by rc.id");
+                        $categoryEachWeek = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total , rc.name as name FROM (SELECT cd.weight,rt.recycle_category_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1] and c.status = 1) AS B RIGHT JOIN recycle_category rc on rc.id = B.recycle_category_id group by rc.id,rc.name order by rc.id");
 
-                        $categoryEachWeekTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1]");
+                        $categoryEachWeekTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1] and c.status = 1");
                     } else {
-                        $categoryEachWeek = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total , rc.name as name FROM (SELECT cd.weight,rt.recycle_category_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1] and chb.type = $hub_type) AS B RIGHT JOIN recycle_category rc on rc.id = B.recycle_category_id group by rc.id,rc.name order by rc.id");
+                        $categoryEachWeek = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total , rc.name as name FROM (SELECT cd.weight,rt.recycle_category_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1] and chb.type = $hub_type and c.status = 1) AS B RIGHT JOIN recycle_category rc on rc.id = B.recycle_category_id group by rc.id,rc.name order by rc.id");
 
-                        $categoryEachWeekTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1] and chb.type = $hub_type");
+                        $categoryEachWeekTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1] and chb.type = $hub_type and c.status = 1");
                     }
 
                     $categoryEachWeek = array_column($categoryEachWeek, 'total');
@@ -1223,13 +1223,13 @@ class ReportController extends Controller
                     $month = $dt->format('m');
                     array_push($labels, $dt->format('M y'));
                     if ($hub_type == '') {
-                        $categoryEachMonth = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total, rc.name as name FROM (SELECT cd.weight,rt.recycle_category_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where c.created_at >= '$date_from' and c.created_at <= '$date_to' and month(c.created_at) = $month and year(c.created_at) = $year) AS B RIGHT JOIN recycle_category rc on rc.id = B.recycle_category_id group by rc.id,rc.name order by rc.id");
+                        $categoryEachMonth = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total, rc.name as name FROM (SELECT cd.weight,rt.recycle_category_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where c.created_at >= '$date_from' and c.created_at <= '$date_to' and month(c.created_at) = $month and year(c.created_at) = $year and c.status = 1) AS B RIGHT JOIN recycle_category rc on rc.id = B.recycle_category_id group by rc.id,rc.name order by rc.id");
 
-                        $categoryEachMonthTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id  where c.created_at >= '$date_from' and c.created_at <= '$date_to' and month(c.created_at) = $month and year(c.created_at) = $year");
+                        $categoryEachMonthTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id  where c.created_at >= '$date_from' and c.created_at <= '$date_to' and month(c.created_at) = $month and year(c.created_at) = $year and c.status = 1");
                     } else {
-                        $categoryEachMonth = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total, rc.name as name FROM (SELECT cd.weight,rt.recycle_category_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where c.created_at >= '$date_from' and c.created_at <= '$date_to' and month(c.created_at) = $month and year(c.created_at) = $year and chb.type = $hub_type ) AS B RIGHT JOIN recycle_category rc on rc.id = B.recycle_category_id group by rc.id,rc.name order by rc.id");
+                        $categoryEachMonth = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total, rc.name as name FROM (SELECT cd.weight,rt.recycle_category_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where c.created_at >= '$date_from' and c.created_at <= '$date_to' and month(c.created_at) = $month and year(c.created_at) = $year and chb.type = $hub_type and c.status = 1) AS B RIGHT JOIN recycle_category rc on rc.id = B.recycle_category_id group by rc.id,rc.name order by rc.id");
 
-                        $categoryEachMonthTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id  where c.created_at >= '$date_from' and c.created_at <= '$date_to' and month(c.created_at) = $month and year(c.created_at) = $year and chb.type = $hub_type");
+                        $categoryEachMonthTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id  where c.created_at >= '$date_from' and c.created_at <= '$date_to' and month(c.created_at) = $month and year(c.created_at) = $year and chb.type = $hub_type and c.status = 1");
                     }
 
                     $categoryEachMonth = array_column($categoryEachMonth, 'total');
@@ -1259,13 +1259,13 @@ class ReportController extends Controller
                         }
                         array_push($labels, $dt->format('Y M ') . $weeksLabel[$key1]);
                         if ($hub_type == '') {
-                            $categoryEachWeek = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total , rc.name as name FROM (SELECT cd.weight,rt.recycle_category_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1]) AS B RIGHT JOIN recycle_category rc on rc.id = B.recycle_category_id group by rc.id,rc.name order by rc.id");
+                            $categoryEachWeek = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total , rc.name as name FROM (SELECT cd.weight,rt.recycle_category_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1] and c.status = 1) AS B RIGHT JOIN recycle_category rc on rc.id = B.recycle_category_id group by rc.id,rc.name order by rc.id");
 
-                            $categoryEachWeekTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1]");
+                            $categoryEachWeekTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1] and c.status = 1");
                         } else {
-                            $categoryEachWeek = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total , rc.name as name FROM (SELECT cd.weight,rt.recycle_category_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1] and chb.type = $hub_type) AS B RIGHT JOIN recycle_category rc on rc.id = B.recycle_category_id group by rc.id,rc.name order by rc.id");
+                            $categoryEachWeek = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total , rc.name as name FROM (SELECT cd.weight,rt.recycle_category_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1] and chb.type = $hub_type and c.status = 1) AS B RIGHT JOIN recycle_category rc on rc.id = B.recycle_category_id group by rc.id,rc.name order by rc.id");
 
-                            $categoryEachWeekTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1] and chb.type = $hub_type");
+                            $categoryEachWeekTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1] and chb.type = $hub_type and c.status = 1");
                         }
 
                         $categoryEachWeek = array_column($categoryEachWeek, 'total');
@@ -1313,9 +1313,9 @@ class ReportController extends Controller
                     $categoryByMonth = array();
                     $categoryByMonthTotal = array();
                     foreach ($months[0] as $value1) {
-                        $categoryEachMonth = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total, ch.hub_name as name FROM (SELECT c.id,cd.weight,c.collection_hub_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $value1 and year(c.created_at) = $curr_year and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
+                        $categoryEachMonth = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total, ch.hub_name as name FROM (SELECT c.id,cd.weight,c.collection_hub_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $value1 and year(c.created_at) = $curr_year and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and c.status = 1) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
 
-                        $categoryEachMonthTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $value1 and year(c.created_at) = $curr_year and rt.recycle_category_id =$value->id and chb.hub_state_id = $state_id and chb.type = $hub_type");
+                        $categoryEachMonthTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $value1 and year(c.created_at) = $curr_year and rt.recycle_category_id =$value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and c.status = 1");
 
                         $categoryEachMonth = array_column($categoryEachMonth, 'total');
                         $categoryEachMonthTotal = array_column($categoryEachMonthTotal, 'total')[0];
@@ -1333,9 +1333,9 @@ class ReportController extends Controller
                     $categoryByWeek = array();
                     $categoryByWeekTotal = array();
                     foreach ($weeks as $value1) {
-                        $categoryEachWeek = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total, ch.hub_name as name FROM (SELECT c.id,cd.weight,c.collection_hub_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value1[0] and day(c.created_at) <= $value1[1] and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type ) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
+                        $categoryEachWeek = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total, ch.hub_name as name FROM (SELECT c.id,cd.weight,c.collection_hub_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value1[0] and day(c.created_at) <= $value1[1] and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and c.status = 1) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
 
-                        $categoryEachWeekTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value1[0] and day(c.created_at) <= $value1[1] and rt.recycle_category_id =$value->id and chb.hub_state_id = $state_id and chb.type = $hub_type");
+                        $categoryEachWeekTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value1[0] and day(c.created_at) <= $value1[1] and rt.recycle_category_id =$value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and c.status = 1");
 
                         $categoryEachWeek = array_column($categoryEachWeek, 'total');
                         $categoryEachWeekTotal = array_column($categoryEachWeekTotal, 'total')[0];
@@ -1367,9 +1367,9 @@ class ReportController extends Controller
                         if ($index == 0)
                             array_push($labels, $dt->format('M Y'));
 
-                        $categoryEachMonth = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total, ch.hub_name as name FROM (SELECT c.id,cd.weight,c.collection_hub_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where c.created_at >= '$date_from' and c.created_at <= '$date_to' and month(c.created_at) = $month and year(c.created_at) = $year and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
+                        $categoryEachMonth = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total, ch.hub_name as name FROM (SELECT c.id,cd.weight,c.collection_hub_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where c.created_at >= '$date_from' and c.created_at <= '$date_to' and month(c.created_at) = $month and year(c.created_at) = $year and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and c.status = 1) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
 
-                        $categoryEachMonthTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where c.created_at >= '$date_from' and c.created_at <= '$date_to' and month(c.created_at) = $month and year(c.created_at) = $year and rt.recycle_category_id =$value->id and chb.hub_state_id = $state_id and chb.type = $hub_type");
+                        $categoryEachMonthTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where c.created_at >= '$date_from' and c.created_at <= '$date_to' and month(c.created_at) = $month and year(c.created_at) = $year and rt.recycle_category_id =$value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and c.status = 1");
 
                         $categoryEachMonth = array_column($categoryEachMonth, 'total');
                         $categoryEachMonthTotal = array_column($categoryEachMonthTotal, 'total')[0];
@@ -1405,9 +1405,9 @@ class ReportController extends Controller
                             if ($index == 0)
                                 array_push($labels, $dt->format('Y M ') . $weeksLabel[$key1]);
 
-                            $categoryEachWeek = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total, ch.hub_name as name FROM (SELECT c.id,cd.weight,c.collection_hub_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value1[0] and day(c.created_at) <= $value1[1] and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type ) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
+                            $categoryEachWeek = DB::select("SELECT round(ifnull(sum(B.weight),0),2) as total, ch.hub_name as name FROM (SELECT c.id,cd.weight,c.collection_hub_id from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value1[0] and day(c.created_at) <= $value1[1] and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and c.status = 1 ) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
 
-                            $categoryEachWeekTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value1[0] and day(c.created_at) <= $value1[1] and rt.recycle_category_id =$value->id and chb.hub_state_id = $state_id and chb.type = $hub_type");
+                            $categoryEachWeekTotal = DB::select("SELECT round(ifnull(sum(cd.weight),0),2) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value1[0] and day(c.created_at) <= $value1[1] and rt.recycle_category_id =$value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and c.status = 1");
 
                             $categoryEachWeek = array_column($categoryEachWeek, 'total');
                             $categoryEachWeekTotal = array_column($categoryEachWeekTotal, 'total')[0];
@@ -1739,18 +1739,21 @@ class ReportController extends Controller
                     $state_id = $value1['id'];
                     $stateData = array();
                     foreach ($months[0] as  $index => $value) {
+                        $number = cal_days_in_month(CAL_GREGORIAN, $value, $curr_year);
+                        $date = $curr_year . '-' . $value . '-' . $number;
                         if ($index1 == 0) {
-                            $individualMonth = DB::select("SELECT count(c.id) as total from customer c where c.isIndividual = 1 and month(c.created_at) <= $value and year(c.created_at) = $curr_year");
+                            $individualMonth = DB::select("SELECT count(c.id) as total from customer c where c.isIndividual = 1 and c.created_at <= '$date'");
 
-                            $companyMonth = DB::select("SELECT count(c.id) as total from customer c where c.isIndividual = 0 and month(c.created_at) <= $value and year(c.created_at) = $curr_year");
+                            $companyMonth = DB::select("SELECT count(c.id) as total from customer c where c.isIndividual = 0 and c.created_at <= '$date'");
 
-                            $totalMonth = DB::select("SELECT count(c.id) as total from customer c where month(c.created_at) <= $value and year(c.created_at) = $curr_year");
+                            $totalMonth = DB::select("SELECT count(c.id) as total from customer c where c.created_at <= '$date'");
+
                             array_push($individual, array_column($individualMonth, 'total')[0]);
                             array_push($company, array_column($companyMonth, 'total')[0]);
                             array_push($total, array_column($totalMonth, 'total')[0]);
                         }
 
-                        $totalMonth = DB::select("SELECT count(c.id) as total from customer c where c.state = $state_id and month(c.created_at) <= $value and year(c.created_at) = $curr_year");
+                        $totalMonth = DB::select("SELECT count(c.id) as total from customer c where c.state = $state_id and c.created_at <= '$date'");
                         $stateData[] = array_column($totalMonth, 'total')[0];
                     }
                     $dataAllStates[] = $stateData;
@@ -1762,13 +1765,17 @@ class ReportController extends Controller
                 foreach ($allStates as $index1 => $value1) {
                     $state_id = $value1['id'];
                     $stateData = array();
-                    foreach ($weeks as $value) {
+                    foreach ($weeks as $indexWeek => $value) {
+                        if(date('d') < $value[1]){
+                            break;
+                        }
+                        $date = $curr_year . '-' . $curr_mon . '-' . $value[1];
                         if ($index1 == 0) {
-                            $date = $curr_year . '-' . $curr_mon . '-' . $value[1];
-                            $individualWeek = DB::select("SELECT count(c.id) as total from customer c where c.isIndividual = 1 and c.created_at <= '$date' and year(c.created_at) = $curr_year");
-                            $companyWeek = DB::select("SELECT count(c.id) as total from customer c where c.isIndividual = 0 and c.created_at <= '$date'  and year(c.created_at) = $curr_year");
+                            $labels[] = $weeksLabel[$indexWeek];
+                            $individualWeek = DB::select("SELECT count(c.id) as total from customer c where c.isIndividual = 1 and c.created_at <= '$date'");
+                            $companyWeek = DB::select("SELECT count(c.id) as total from customer c where c.isIndividual = 0 and c.created_at <= '$date'");
 
-                            $totalWeek = DB::select("SELECT count(c.id) as total from customer c where c.created_at <= '$date'  and year(c.created_at) = $curr_year");
+                            $totalWeek = DB::select("SELECT count(c.id) as total from customer c where c.created_at <= '$date'");
 
                             array_push($individual, array_column($individualWeek, 'total')[0]);
                             array_push($company, array_column($companyWeek, 'total')[0]);
@@ -1780,7 +1787,6 @@ class ReportController extends Controller
                     $dataAllStates[] = $stateData;
                     $allStatesName[] = $value1['name'];
                 }
-                $labels = $weeksLabel;
             }
         } else {
             $start    = (new DateTime($date_from))->modify('first day of this month');
@@ -1798,21 +1804,23 @@ class ReportController extends Controller
                     foreach ($period as $key => $dt) {
                         $year = $dt->format('Y');
                         $month = $dt->format('m');
+                        $number = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+                        $date = $year . '-' . $month . '-' . $number;
 
                         if ($index1 == 0) {
                             array_push($labels, $dt->format('M Y'));
 
-                            $individualMonth = DB::select("SELECT count(c.id) as total from customer c where c.isIndividual = 1  and month(c.created_at) <= $month and year(c.created_at) = $year");
+                            $individualMonth = DB::select("SELECT count(c.id) as total from customer c where c.isIndividual = 1  and c.created_at <= '$date'");
 
-                            $companyMonth = DB::select("SELECT count(c.id) as total from customer c where c.isIndividual = 0 and month(c.created_at) <= $month and year(c.created_at) = $year");
+                            $companyMonth = DB::select("SELECT count(c.id) as total from customer c where c.isIndividual = 0 and c.created_at <= '$date'");
 
-                            $totalMonth = DB::select("SELECT count(c.id) as total from customer c where month(c.created_at) <= $month and year(c.created_at) = $year");
+                            $totalMonth = DB::select("SELECT count(c.id) as total from customer c where c.created_at <= '$date'");
                             array_push($individual, array_column($individualMonth, 'total')[0]);
                             array_push($company, array_column($companyMonth, 'total')[0]);
                             array_push($total, array_column($totalMonth, 'total')[0]);
                         }
 
-                        $totalMonth = DB::select("SELECT count(c.id) as total from customer c where c.state = $state_id and month(c.created_at) <= $month and year(c.created_at) = $year");
+                        $totalMonth = DB::select("SELECT count(c.id) as total from customer c where c.state = $state_id and c.created_at <= '$date'");
                         $stateData[] = array_column($totalMonth, 'total')[0];
                     }
                     $dataAllStates[] = $stateData;
@@ -1840,20 +1848,21 @@ class ReportController extends Controller
                                     $break = true;
                                 }
                             }
+
+                            $date = $curr_year . '-' . $curr_mon . '-' . $value[1];
                             if ($index1 == 0) {
                                 array_push($labels, $dt->format('Y M ') . $weeksLabel[$key1]);
 
-                                $date = $curr_year . '-' . $curr_mon . '-' . $value[1];
-                                $individualWeek = DB::select("SELECT count(c.id) as total from customer c where c.isIndividual = 1 and c.created_at <= '$date' and year(c.created_at) = $curr_year");
-                                $companyWeek = DB::select("SELECT count(c.id) as total from customer c where c.isIndividual = 0 and c.created_at <= '$date'  and year(c.created_at) = $curr_year");
+                                $individualWeek = DB::select("SELECT count(c.id) as total from customer c where c.isIndividual = 1 and c.created_at <= '$date'");
+                                $companyWeek = DB::select("SELECT count(c.id) as total from customer c where c.isIndividual = 0 and c.created_at <= '$date'");
 
-                                $totalWeek = DB::select("SELECT count(c.id) as total from customer c where c.created_at <= '$date'  and year(c.created_at) = $curr_year");
+                                $totalWeek = DB::select("SELECT count(c.id) as total from customer c where c.created_at <= '$date'");
 
                                 array_push($individual, array_column($individualWeek, 'total')[0]);
                                 array_push($company, array_column($companyWeek, 'total')[0]);
                                 array_push($total, array_column($totalWeek, 'total')[0]);
                             }
-                            $totalWeek = DB::select("SELECT count(c.id) as total from customer c where c.state = $state_id and year(c.created_at) = $curr_year and c.created_at <= '$date'");
+                            $totalWeek = DB::select("SELECT count(c.id) as total from customer c where c.state = $state_id and c.created_at <= '$date'");
                             $stateData[] = array_column($totalWeek, 'total')[0];
                         }
                     }
@@ -1886,11 +1895,14 @@ class ReportController extends Controller
                 $dataMonth = array();
                 if ($format == 'Month') {
                     foreach ($months[0] as $value1) {
+                        $number = cal_days_in_month(CAL_GREGORIAN, $value1, $curr_year);
+                        $date = $curr_year . '-' . $value1 . '-' . $number;
+                        
                         $city_id = $value['id'];
-                        $dataCities = DB::select("SELECT count(c.id) as total from customer c where c.city = $city_id and month(c.created_at) <= $value1 and year(c.created_at) = $curr_year  ");
+                        $dataCities = DB::select("SELECT count(c.id) as total from customer c where c.city = $city_id and c.created_at <= '$date'");
 
                         if ($index == 0) {
-                            $dataStates = DB::select("SELECT count(c.id) as total from customer c where c.state = $state_id and month(c.created_at) <= $value1 and year(c.created_at) = $curr_year ");
+                            $dataStates = DB::select("SELECT count(c.id) as total from customer c where c.state = $state_id and c.created_at <= '$date'");
                             $dataAll[] = array_column($dataStates, 'total')[0];
                         }
                         $dataMonth[] = array_column($dataCities, 'total')[0];
@@ -1900,12 +1912,17 @@ class ReportController extends Controller
                     $labels = $months[1];
                 }
                 if ($format == 'Week') {
-                    foreach ($weeks as $value1) {
+                    foreach ($weeks as $indexWeek => $value1) {
+                        if(date('d') < $value1[1]){
+                            break;
+                        }
+                        
                         $city_id = $value['id'];
                         $date = $curr_year . '-' . $curr_mon . '-' . $value1[1];
                         $dataCities = DB::select("SELECT count(c.id) as total from customer c where c.city = $city_id and c.created_at <= '$date'");
 
                         if ($index == 0) {
+                            $labels[] = $weeksLabel[$indexWeek];
                             $dataStates = DB::select("SELECT count(c.id) as total from customer c where c.state = $state_id and c.created_at <= '$date'  ");
                             $dataAll[] = array_column($dataStates, 'total')[0];
                         }
@@ -1913,7 +1930,6 @@ class ReportController extends Controller
                     }
                     $cityData[] = $dataMonth;
                     $city[] = $value['name'];
-                    $labels = $weeksLabel;
                 }
             }
         } else {
@@ -1932,13 +1948,16 @@ class ReportController extends Controller
                         $year = $dt->format('Y');
                         $month = $dt->format('m');
 
+                        $number = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+                        $date = $year . '-' . $month . '-' . $number;
+
                         $city_id = $value['id'];
-                        $dataCities = DB::select("SELECT count(c.id) as total from customer c where c.city = $city_id and month(c.created_at) <= $month and year(c.created_at) = $year");
+                        $dataCities = DB::select("SELECT count(c.id) as total from customer c where c.city = $city_id and c.created_at <= '$date'");
 
                         if ($index == 0) {
                             array_push($labels, $dt->format('M Y'));
 
-                            $dataStates = DB::select("SELECT count(c.id) as total from customer c where c.state = $state_id and month(c.created_at) <= $month and year(c.created_at) = $year");
+                            $dataStates = DB::select("SELECT count(c.id) as total from customer c where c.state = $state_id and c.created_at <= '$date'");
                             $dataAll[] = array_column($dataStates, 'total')[0];
                         }
                         $dataMonth[] = array_column($dataCities, 'total')[0];

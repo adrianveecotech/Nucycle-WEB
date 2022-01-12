@@ -212,7 +212,7 @@ class Helper
         if ($request->when == 'now' || $request->when == 'now_from_scheduler') {
             $user_type = $request->user_type;
             if ($user_type == 'customer') {
-                $user_token = User::where('device_token', '!=', null)->where('receive_notification', 1)->leftJoin('user_role', function ($join) {
+                $user_token = User::where('device_token', '!=', null)->where('device_token', '!=', '')->where('receive_notification', 1)->leftJoin('user_role', function ($join) {
                     $join->on('users.id', '=', 'user_role.user_id');
                 })->where('user_role.role_id', 2)->pluck('device_token')
                     ->all();
@@ -223,7 +223,7 @@ class Helper
             } else if ($user_type == 'collector') {
                 $user_token = User::leftJoin('user_role', function ($join) {
                     $join->on('users.id', '=', 'user_role.user_id');
-                })->where('device_token', '!=', null)->where('receive_notification', 1)->where('user_role.role_id', 3)->pluck('device_token')
+                })->where('device_token', '!=', null)->where('device_token', '!=', '')->where('receive_notification', 1)->where('user_role.role_id', 3)->pluck('device_token')
                     ->all();
                 $user = User::leftJoin('user_role', function ($join) {
                     $join->on('users.id', '=', 'user_role.user_id');
@@ -233,7 +233,7 @@ class Helper
                 $user_token = User::leftJoin('user_role', function ($join) {
                     $join->on('users.id', '=', 'user_role.user_id');
                 })->where(function ($query) {
-                    $query->where('device_token', '!=', null)->where('receive_notification', 1);
+                    $query->where('device_token', '!=', null)->where('device_token', '!=', '')->where('receive_notification', 1);
                 })->where(function ($query) {
                     $query->where('user_role.role_id', 3)
                         ->orWhere('user_role.role_id', 2);

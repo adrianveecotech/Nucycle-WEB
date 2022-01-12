@@ -20,6 +20,7 @@
                                 <th><span>Status</span></th>
                                 <th><span>Time Set</span></th>
                                 <th><span>Time Sent</span></th>
+                                <th><span>Created At</span></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -31,6 +32,7 @@
                                 <td>{{$notification->status}}</td>
                                 <td>{{$notification->time_set}}</td>
                                 <td>{{$notification->time_sent}}</td>
+                                <td>{{$notification->created_at}}</td>
                             </tr>
                             @endforeach
                         </tbody>
