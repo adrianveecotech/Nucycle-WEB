@@ -52,7 +52,7 @@
                                 <a href="{{route('waste_clearance.edit', ['id' => $schedule->id])}}" class="btn btn-xs btn-success"><i class="nav-icon fa fa-pencil"></i></a>
                                 <a href="{{route('waste_clearance.cancel', ['id' => $schedule->id])}}" class="btn btn-xs btn-danger"><i class="nav-icon fa fa-ban"></i></a>
                                 @elseif($schedule->status == 2)
-                                <a href="{{route('waste_clearance.view_statement', ['id' => $schedule->id])}}" class="btn btn-xs btn-success"><i class="nav-icon fa fa-file"></i></a>
+                                <a href="{{route('waste_clearance_statement.view', ['id' => $schedule->id])}}" class="btn btn-xs btn-success"><i class="nav-icon fa fa-file"></i></a>
                                 @endif
                             </td>
                         </tr>

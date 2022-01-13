@@ -252,7 +252,7 @@
                     reward_id: <?php echo $id ?>
                 },
                 type: "POST",
-                url: "http://127.0.0.1:8000/reward/insert_voucher",
+                url: "https://app.nucycle.com.my/reward/insert_voucher",
                 success: function(url) {
                     $('#close_modal').css('display', 'block');
                     $('#confirm_import').css('display', 'none');

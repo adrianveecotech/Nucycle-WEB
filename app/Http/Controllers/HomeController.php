@@ -7,6 +7,7 @@ use App\Models\Article;
 use App\Models\City;
 use App\Models\Collection;
 use App\Models\CollectionHub;
+use App\Models\CollectionHubAdmin;
 use App\Models\CollectionHubRecycleType;
 use App\Models\Collector;
 use App\Models\Customer;
@@ -54,7 +55,7 @@ class HomeController extends Controller
         $hubs =  Auth::user()->hub_reader;
         if (in_array(1, Auth::user()->users_roles_id())) {
             $customerCount = Customer::count();
-            $collectorCount = Collector::count();
+            $collectorCount = Collector::count() + CollectionHubAdmin::count();
             $collectionCount = Collection::count();
             $hubCount = CollectionHub::count();
             $year = date('Y');
