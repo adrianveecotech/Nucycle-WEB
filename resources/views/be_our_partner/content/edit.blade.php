@@ -49,7 +49,7 @@
 @section('scripts')
 <script type="text/javascript">
     $(document).ready(function() {
-        var javaScriptVar = <?php echo json_encode($content->content); ?>;
+        var javaScriptVar = <?php echo json_encode(str_replace("'","\'",$content->content)); ?>;
         $('#content').summernote('code',javaScriptVar,{
             height: 400,
             callbacks: {

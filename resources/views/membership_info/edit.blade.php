@@ -48,7 +48,7 @@
 @section('scripts')
 <script type="text/javascript">
     $(document).ready(function() {
-        var javaScriptVar = '<?php echo $membership->content; ?>';
+        var javaScriptVar = '<?php echo str_replace("'","\'",$membership->content); ?>';
         $('#content').summernote({
             height: 400,
             callbacks: {

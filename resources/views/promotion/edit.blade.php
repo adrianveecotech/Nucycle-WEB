@@ -175,7 +175,7 @@
             readURL(this);
         });
 
-        var javaScriptVar = '<?php echo $promotion->description; ?>';
+        var javaScriptVar = '<?php echo str_replace("'","\'",$promotion->description); ?>';
         $('#description').summernote({
             height: 400,
             callbacks: {
