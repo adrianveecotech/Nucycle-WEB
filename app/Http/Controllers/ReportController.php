@@ -31,6 +31,7 @@ use Auth;
 use App\Exports\NupTableExport;
 use App\Exports\EPointTableExport;
 use App\Exports\EVoucherTableExport;
+use App\Exports\NupSalesTableExport;
 use Excel;
 
 
@@ -4365,7 +4366,7 @@ class ReportController extends Controller
         return view('report.partner_export', compact('monthLabels', 'yearMonthWeekLabel', 'weekLabel', 'voucherRedeemedMonth', 'userRedeemedMonth', 'voucherRedeemedWeek', 'userRedeemedWeek', 'userRedeemedWeekLastMonth', 'colors', 'topStates', 'merchantHighestRedemption', 'forteenDaysLabel', 'userReachForteenDays', 'sevenDaysLabel', 'userReachSevenDays', 'userReachMonth', 'userClickMonth', 'userClickSevenDays', 'userClickForteenDays', 'topStatesUserClicks', 'topDistricts', 'topDistrictsUserClicks', 'merchantsData', 'merchantCategory', 'twoDaysDifferentInMonth', 'numberOfRedemptionIn2days', 'userReachIn2days', 'userClickIn2days', 'merchant'));
     }
 
-    public function nuppurchase_index()
+    public function nuppurchase_index(Request $request)
     {
         $collections = DB::table('collection_detail')
         ->join('collection_hub_recycle','collection_detail.recycling_type_id','=','collection_hub_recycle.recycle_type_id')
@@ -4377,7 +4378,18 @@ class ReportController extends Controller
         ->select('collection_detail.collection_id AS collection_id','collection_detail.weight AS weight','collection_detail.total_point AS total_point','collection_hub_recycle.point AS point','recycle_type.name AS type_name','recycle_category.name AS category_name','collection.status','collection.created_at','customer.membership_id AS customer_id','customer.name','collection_hub.hub_name AS location')
         ->orderBy('collection.created_at')
         ->get();
-        
+        if(session()->has('monthinnum'))
+        {
+            $request->session()->forget('monthinnum');
+        }
+        else if(session()->has('month'))
+        {
+            $request->session()->forget('month');
+        }
+        else if(session()->has('year'))
+        {
+            $request->session()->forget('year');
+        }
         return view('report.accounting.nuppurchase', compact('collections'));
     }
 
@@ -4393,8 +4405,7 @@ class ReportController extends Controller
         ->join('reward_category','rewards.reward_category_id','=','reward_category.id')
         ->join('customer','customer_reward.customer_id','=','customer.id')
         ->join('merchant','rewards.merchant_id','=','merchant.id')
-        ->select('reward_category.name AS reward_category','rewards.title AS reward_name','customer.membership_id AS user_id','customer.name AS user_name','customer_reward.redeem_date','customer_reward.id AS redemption_id','merchant.name as merchant_name','rewards.point as voucher_value','customer_reward.created_at AS voucher_date','customer_reward.voucher_id AS voucher_code')
-        ->where('rewards.reward_category_id',9)
+        ->select('reward_category.name AS reward_category','rewards.title AS reward_name','customer.membership_id AS user_id','customer.name AS user_name','customer_reward.redeem_date','customer_reward.id AS redemption_id','merchant.name as merchant_name','rewards.point as voucher_value','rewards.created_at AS voucher_date','customer_reward.voucher_id AS voucher_code')
         ->get();
         
         return view('report.accounting.evoucher', compact('evouchers'));
@@ -4406,7 +4417,7 @@ class ReportController extends Controller
     }
 
 
-    public function epoint_index()
+    public function epoint_index(Request $request)
     {
         $current = Carbon::now();
         $currentMonth = $current->month;
@@ -4470,7 +4481,18 @@ class ReportController extends Controller
             $costredeem = number_format($costredeem, 2, '.', '');
             $e->costredeem = $costredeem; 
         }
-        
+        if(session()->has('monthinnum'))
+        {
+            $request->session()->forget('monthinnum');
+        }
+        else if(session()->has('month'))
+        {
+            $request->session()->forget('month');
+        }
+        else if(session()->has('year'))
+        {
+            $request->session()->forget('year');
+        }
         return view('report.accounting.epoint',compact('epoints'));
     }
     
@@ -4479,4 +4501,292 @@ class ReportController extends Controller
         return Excel::download(new EPointTableExport,'Epoint.csv');
     }
 
+    public function nuppurchase_filter(Request $request)
+    {
+        if(!empty($request->input('month'))) {
+            $monthinnum = date('m',strtotime($request->input('month')));
+            $month = date('M',strtotime($request->input('month')));
+            $year = date('Y',strtotime($request->input('month')));
+            $collections = DB::table('collection_detail')
+            ->join('collection_hub_recycle','collection_detail.recycling_type_id','=','collection_hub_recycle.recycle_type_id')
+            ->join('recycle_type','collection_detail.recycling_type_id','=','recycle_type.id')
+            ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+            ->rightJoin('collection','collection.id','=','collection_detail.collection_id')
+            ->join('customer','collection.customer_id','=','customer.id')
+            ->join('collection_hub','collection.collection_hub_id','=','collection_hub.id')
+            ->select('collection_detail.collection_id AS collection_id','collection_detail.weight AS weight','collection_detail.total_point AS total_point','collection_hub_recycle.point AS point','recycle_type.name AS type_name','recycle_category.name AS category_name','collection.status','collection.created_at','customer.membership_id AS customer_id','customer.name','collection_hub.hub_name AS location')
+            ->whereMonth('collection.created_at', $monthinnum)
+            ->whereYear('collection.created_at', $year)
+            ->orderBy('collection.created_at')
+            ->get();
+            if(session()->has('monthinnum'))
+            {
+                $request->session()->forget('monthinnum');
+            }
+            else if(session()->has('month'))
+            {
+                $request->session()->forget('month');
+            }
+            else if(session()->has('year'))
+            {
+                $request->session()->forget('year');
+            }
+            session(['monthinnum' => $monthinnum]);
+            session(['month' => $month]);
+            session(['year'=>$year]);
+            return view('report.accounting.nuppurchase', compact('collections'));
+        } else {
+            return redirect()->route('report.accounting.nuppurchase');
+        }
+    }
+
+    public function epoint_filter(Request $request)
+    {
+        if(!empty($request->input('month'))) {
+            $monthinnum = date('m',strtotime($request->input('month')));
+            $month = date('M',strtotime($request->input('month')));
+            $year = date('Y',strtotime($request->input('month')));
+            $currentMonth = $monthinnum;
+            $currentYear = $year;
+            $epoints = DB::table('collection')->join('customer','collection.customer_id','=','customer.id')
+                        ->select('customer.id as cus_id','customer.membership_id as user_id','customer.name as user_name')
+                        ->distinct()
+                        ->get();
+    
+            foreach($epoints as $e)
+            {
+                $currentMonthBalance = DB::table('customer_point_transaction')->where('customer_id',$e->cus_id)->whereMonth('created_at',$currentMonth)
+                ->whereYear('created_at',$currentYear)->sum('balance');
+                $totalBalance = DB::table('customer_point_transaction')->where('customer_id',$e->cus_id)
+                ->whereMonth('created_at','<=',$currentMonth)
+                ->whereYear('created_at','<=',$currentYear)
+                ->sum('balance');
+    
+                if(is_null($currentMonthBalance))
+                {
+                    $currentMonthBalance = 0;
+                }
+    
+                if(is_null($totalBalance))
+                {
+                    $totalBalance = 0;
+                }
+    
+                $e->previousBalance = $totalBalance - $currentMonthBalance;
+    
+                $monthlyearn = DB::table('collection')
+                ->where('customer_id',$e->cus_id)
+                ->whereMonth('created_at',$currentMonth)
+                ->whereYear('created_at',$currentYear)
+                ->sum('total_point');
+    
+                if(is_null($monthlyearn))
+                {
+                    $monthlyearn = 0;
+                }
+    
+                $e->monthlyearn = $monthlyearn;
+    
+                $currentMonthRedeem = DB::table('customer_reward')
+                ->where('customer_id',$e->cus_id)
+                ->whereMonth('created_at',$currentMonth)
+                ->whereYear('created_at',$currentYear)
+                ->sum('point_used');
+    
+                if(is_null($currentMonthRedeem))
+                {
+                    $currentMonthRedeem = 0;
+                }
+    
+                $e->currentMonthRedeem = $currentMonthRedeem;
+                $e->current = $e->previousBalance + $e->monthlyearn - $e->currentMonthRedeem;
+                $e->unitvalue = "RM0.01";
+                $totalcurrent = (float)$e->current/100;
+                $totalcurrent = round($totalcurrent,2);
+                $totalcurrent = number_format($totalcurrent, 2, '.', '');
+                $e->totalvalue = $totalcurrent;
+                $costredeem = (float)$e->currentMonthRedeem/100;
+                $costredeem = round($costredeem,2);
+                $costredeem = number_format($costredeem, 2, '.', '');
+                $e->costredeem = $costredeem; 
+            }
+            
+            
+            if(session()->has('monthinnum'))
+            {
+                $request->session()->forget('monthinnum');
+            }
+            else if(session()->has('month'))
+            {
+                $request->session()->forget('month');
+            }
+            else if(session()->has('year'))
+            {
+                $request->session()->forget('year');
+            }
+            session(['monthinnum' => $monthinnum]);
+            session(['month' => $month]);
+            session(['year'=>$year]);
+            return view('report.accounting.epoint',compact('epoints'));
+        } else {
+            return redirect()->route('report.accounting.epoint');
+        }
+    }
+
+    public function evoucher_filter(Request $request)
+    {
+        if(!empty($request->input('month')))
+        {
+            $monthinnum = date('m',strtotime($request->input('month')));
+            $month = date('M',strtotime($request->input('month')));
+            $year = date('Y',strtotime($request->input('month')));
+            $evouchers = DB::table('customer_reward')
+            ->join('rewards','customer_reward.reward_id','=','rewards.id')
+            ->join('reward_category','rewards.reward_category_id','=','reward_category.id')
+            ->join('customer','customer_reward.customer_id','=','customer.id')
+            ->join('merchant','rewards.merchant_id','=','merchant.id')
+            ->select('reward_category.name AS reward_category','rewards.title AS reward_name','customer.membership_id AS user_id','customer.name AS user_name','customer_reward.redeem_date','customer_reward.id AS redemption_id','merchant.name as merchant_name','rewards.point as voucher_value','rewards.created_at AS voucher_date','customer_reward.voucher_id AS voucher_code')
+            ->whereMonth('customer_reward.redeem_date',$monthinnum)
+            ->whereYear('customer_reward.redeem_date',$year)
+            ->get();
+            if(session()->has('monthinnum'))
+            {
+                $request->session()->forget('monthinnum');
+            }
+            else if(session()->has('month'))
+            {
+                $request->session()->forget('month');
+            }
+            else if(session()->has('year'))
+            {
+                $request->session()->forget('year');
+            }
+            session(['monthinnum' => $monthinnum]);
+            session(['month' => $month]);
+            session(['year'=>$year]);
+            return view('report.accounting.evoucher', compact('evouchers'));
+        }
+        else {
+            return redirect()->route('report.accounting.evoucher');
+        }
+    }
+
+    public function nupsales_index(Request $request)
+    {
+        $nupsales = DB::table('waste_clearance_schedule')
+                    ->join('collection_hub','waste_clearance_schedule.collection_hub_id','=','collection_hub.id')
+                    ->leftjoin('waste_clearance_schedule_payment','waste_clearance_schedule.id','=','waste_clearance_schedule_payment.waste_clearance_schedule_id')
+                    ->select('waste_clearance_schedule.id as do_num','waste_clearance_schedule.collection_time as do_date','collection_hub.hub_name as hub_location','waste_clearance_schedule.buyer_name','waste_clearance_schedule_payment.id as sales_inv_num','waste_clearance_schedule_payment.invoice_date as sales_inv_date','waste_clearance_schedule_payment.unit_price','waste_clearance_schedule_payment.total_price','waste_clearance_schedule_payment.receipt_date','waste_clearance_schedule_payment.receipt_number','waste_clearance_schedule_payment.total_amount as receipt_amount','waste_clearance_schedule_payment.total_amount as actual_cash_receive')
+                    ->get();
+
+        foreach($nupsales as $n)
+        {
+            $product_type = [];
+            $product_des = [];
+            $do_qty = [];
+            $waste_clearance_schedule_item = DB::table('waste_clearance_schedule_item')
+                                            ->select('recycle_type_id as type_id','weight')
+                                            ->where('waste_clearance_schedule_id',$n->do_num)
+                                            ->get();
+            foreach($waste_clearance_schedule_item as $item)
+            {
+                $recycle = DB::table('recycle_type')
+                        ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+                        ->select('recycle_type.name as product_des','recycle_category.name as product_type')
+                        ->where('recycle_type.id',$item->type_id)
+                        ->first();
+                array_push($product_type,$recycle->product_type);
+                array_push($product_des,$recycle->product_des);
+                array_push($do_qty,$item->weight);
+            }                                
+            $n->product_type = json_encode($product_type);
+            $n->product_des = json_encode($product_des);
+            $n->do_qty = json_encode($do_qty);
+        }
+
+        if(session()->has('monthinnum'))
+        {
+            $request->session()->forget('monthinnum');
+        }
+        else if(session()->has('month'))
+        {
+            $request->session()->forget('month');
+        }
+        else if(session()->has('year'))
+        {
+            $request->session()->forget('year');
+        }
+       
+        return view('report.accounting.nupsales',compact('nupsales'));
+    }
+
+    public function nupsales_filter(Request $request)
+    {
+        if(!empty($request->input('month')))
+        {
+            $monthinnum = date('m',strtotime($request->input('month')));
+            $month = date('M',strtotime($request->input('month')));
+            $year = date('Y',strtotime($request->input('month')));
+            $nupsales = DB::table('waste_clearance_schedule')
+                        ->join('collection_hub','waste_clearance_schedule.collection_hub_id','=','collection_hub.id')
+                        ->leftjoin('waste_clearance_schedule_payment','waste_clearance_schedule.id','=','waste_clearance_schedule_payment.waste_clearance_schedule_id')
+                        ->select('waste_clearance_schedule.id as do_num','waste_clearance_schedule.collection_time as do_date','collection_hub.hub_name as hub_location','waste_clearance_schedule.buyer_name','waste_clearance_schedule_payment.id as sales_inv_num','waste_clearance_schedule_payment.invoice_date as sales_inv_date','waste_clearance_schedule_payment.unit_price','waste_clearance_schedule_payment.total_price','waste_clearance_schedule_payment.receipt_date','waste_clearance_schedule_payment.receipt_number','waste_clearance_schedule_payment.total_amount as receipt_amount','waste_clearance_schedule_payment.total_amount as actual_cash_receive')
+                        ->whereMonth('waste_clearance_schedule.collection_time',$monthinnum)
+                        ->whereYear('waste_clearance_schedule.collection_time',$year)
+                        ->get();
+
+            foreach($nupsales as $n)
+            {
+                $product_type = [];
+                $product_des = [];
+                $do_qty = [];
+                $waste_clearance_schedule_item = DB::table('waste_clearance_schedule_item')
+                                                ->select('recycle_type_id as type_id','weight')
+                                                ->where('waste_clearance_schedule_id',$n->do_num)
+                                                ->whereMonth('waste_clearance_schedule_item.created_at',$monthinnum)
+                                                ->whereYear('waste_clearance_schedule_item.created_at',$year)
+                                                ->get();
+                foreach($waste_clearance_schedule_item as $item)
+                {
+                    $recycle = DB::table('recycle_type')
+                            ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+                            ->select('recycle_type.name as product_des','recycle_category.name as product_type')
+                            ->where('recycle_type.id',$item->type_id)
+                            ->first();
+                    array_push($product_type,$recycle->product_type);
+                    array_push($product_des,$recycle->product_des);
+                    array_push($do_qty,$item->weight);
+                }                                
+                $n->product_type = json_encode($product_type);
+                $n->product_des = json_encode($product_des);
+                $n->do_qty = json_encode($do_qty);
+            }
+
+            if(session()->has('monthinnum'))
+            {
+                $request->session()->forget('monthinnum');
+            }
+            else if(session()->has('month'))
+            {
+                $request->session()->forget('month');
+            }
+            else if(session()->has('year'))
+            {
+                $request->session()->forget('year');
+            }
+            session(['monthinnum' => $monthinnum]);
+            session(['month' => $month]);
+            session(['year'=>$year]);
+            return view('report.accounting.nupsales',compact('nupsales'));
+        }
+        else
+        {
+            return redirect()->route('report.accounting.nupsales');
+        }
+    }
+
+    public function export_nupsales_csv()
+    {
+        return Excel::download(new NupSalesTableExport,'NupSales.csv');
+    }
 }

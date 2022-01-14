@@ -26,7 +26,13 @@
     </div>
     <div class="card-body">
         <div class="text-right pb-2">
+          <form method="post" action="{{route('report.accounting.epoint_filter')}}">
+            @csrf
+            <label class="mr-2">Date:</label>
+            <input type="month" id="month" name="month">
+            <input type="submit" id="btn_show" class="btn btn-xs btn-info ml-2" value="Filter">
             <a href="{!! route('report.accounting.epoint_csv') !!}" id="btn_csv" class="btn btn-xs btn-success ml-2">CSV</a>
+            <a href="{!! route('report.accounting.epoint') !!}" id="btn_csv" class="btn btn-xs btn-success ml-2">Reset</a>
         </div>
       @include('report.accounting.epointtable')
       <div class="clearfix"></div>

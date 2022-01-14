@@ -20,6 +20,7 @@
         "laravel/ui": "^3.2",
         "maatwebsite/excel": "^3.1",
         "phpmailer/phpmailer": "^6.3",
+        "phpoffice/phpspreadsheet": "^1.21",
         "spatie/browsershot": "^3.45"
     },
     "require-dev": {

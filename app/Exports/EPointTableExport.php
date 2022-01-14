@@ -6,9 +6,17 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithCustomStartCell;
+use Maatwebsite\Excel\Events\AfterSheet;
 
-class EPointTableExport implements FromCollection,WithHeadings
+class EPointTableExport implements FromCollection,WithHeadings,WithEvents, WithCustomStartCell
 {
+    public function startCell(): string
+    {
+        return 'A3';
+    }
+
     public function headings():array{
         return[
             'Supplier ID',
@@ -22,15 +30,44 @@ class EPointTableExport implements FromCollection,WithHeadings
             'Cost of Redeemed'
         ];
     }
+
+    public function registerEvents(): array {
+        
+        return [
+            AfterSheet::class => function(AfterSheet $event) {
+                /** @var Sheet $sheet */
+                $sheet = $event->sheet;
+
+                $sheet->mergeCells('A1:G1');
+                $sheet->setCellValue('A1', "Company Name - Nuplas Solutions Sdn. Bhd.");
+
+                $sheet->mergeCells('A2:G2');
+                $sheet->setCellValue('A2', "e-POINT List");
+                
+                $cellRange = 'A1:G2'; // All headers
+                $event->sheet->getDelegate()->getStyle($cellRange);
+            },
+        ];
+    }
     /**
     * @return \Illuminate\Support\Collection
     */
     public function collection()
     {
         //
-        $current = Carbon::now();
-        $currentMonth = $current->month;
-        $currentYear = $current->year;
+        $currentMonth = "";
+        $currentYear = "";
+        if (session()->has('monthinnum') && session()->has('year'))
+        {
+            $currentMonth = session('monthinnum');
+            $currentYear = session('year');
+        }
+        else
+        {
+            $current = Carbon::now();
+            $currentMonth = $current->month;
+            $currentYear = $current->year;
+        }
         $epoints = DB::table('collection')->join('customer','collection.customer_id','=','customer.id')
                     ->select('customer.id as cus_id','customer.membership_id as user_id','customer.name as user_name')
                     ->distinct()
@@ -40,7 +77,10 @@ class EPointTableExport implements FromCollection,WithHeadings
         {
             $currentMonthBalance = DB::table('customer_point_transaction')->where('customer_id',$e->cus_id)->whereMonth('created_at',$currentMonth)
             ->whereYear('created_at',$currentYear)->sum('balance');
-            $totalBalance = DB::table('customer_point_transaction')->where('customer_id',$e->cus_id)->sum('balance');
+            $totalBalance = DB::table('customer_point_transaction')->where('customer_id',$e->cus_id)
+            ->whereMonth('created_at','<=',$currentMonth)
+            ->whereYear('created_at','<=',$currentYear)
+            ->sum('balance');
 
             if(is_null($currentMonthBalance))
             {
@@ -84,7 +124,7 @@ class EPointTableExport implements FromCollection,WithHeadings
             $totalcurrent = (float)$e->current/100;
             $totalcurrent = round($totalcurrent,2);
             $totalcurrent = number_format($totalcurrent, 2, '.', '');
-            $e->totalvalue = $totalcurrent;
+            $e->totalvalue = "RM".$totalcurrent;
             $costredeem = (float)$e->currentMonthRedeem/100;
             $costredeem = round($costredeem,2);
             $costredeem = number_format($costredeem, 2, '.', '');

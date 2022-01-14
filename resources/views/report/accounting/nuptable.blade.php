@@ -30,7 +30,7 @@
                     <tbody>
                         @foreach($collections as $collection)
                         <tr>
-                            <td>{{$collection->status == 0 ? 'Cancelled' : 'Normal'}}</td>
+                            <td>{{$collection->status == 0 ? 'Cancelled' : 'Successful'}}</td>
                             <td class="lalign">PO{{$collection->collection_id}}</td>
                             <td>{{Carbon\Carbon::parse($collection->created_at)->format('Y-m-d')}}</td>
                             <td>{{$collection->location}}</td>

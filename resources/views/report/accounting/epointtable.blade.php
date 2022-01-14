@@ -33,7 +33,7 @@
                             <td>{{$epoint->currentMonthRedeem}}</td>
                             <td>{{$epoint->current}}</td>
                             <td>{{$epoint->unitvalue}}</td>
-                            <td>{{$epoint->totalvalue}}</td>
+                            <td>RM{{$epoint->totalvalue}}</td>
                             <td>{{$epoint->costredeem}}</td>                    
                         </tr>
                       

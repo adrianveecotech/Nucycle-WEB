@@ -39,7 +39,7 @@
                             $voucher_value = round($voucher_value,2);
                             $voucher_value = number_format($voucher_value, 2, '.', '');
                             @endphp
-                            <td>{{$voucher_value}}</td>
+                            <td>RM{{$voucher_value}}</td>
                             <td>{{Carbon\Carbon::parse($evoucher->voucher_date)->format('Y-m-d')}}</td>
                             <td>{{$evoucher->voucher_code}}</td>
                         </tr>

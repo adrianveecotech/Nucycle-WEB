@@ -61,12 +61,19 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
         });
 
         Route::group(['prefix' => 'accounting'], function () {
+            Route::post('nuppurchase_filter', 'ReportController@nuppurchase_filter')->name('report.accounting.nuppurchase_filter');
+            Route::post('epoint_filter', 'ReportController@epoint_filter')->name('report.accounting.epoint_filter');
+            Route::post('evoucher_filter', 'ReportController@evoucher_filter')->name('report.accounting.evoucher_filter');
+            Route::post('nupsales_filter', 'ReportController@nupsales_filter')->name('report.accounting.nupsales_filter');
             Route::get('nuppurchase', 'ReportController@nuppurchase_index')->name('report.accounting.nuppurchase');
             Route::get('nuppurchase-csv', 'ReportController@export_nuppurchase_csv')->name('report.accounting.nuppurchase_csv');
             Route::get('epoint', 'ReportController@epoint_index')->name('report.accounting.epoint');
             Route::get('epoint-csv', 'ReportController@export_epoint_csv')->name('report.accounting.epoint_csv');
             Route::get('evoucher', 'ReportController@evoucher_index')->name('report.accounting.evoucher');
             Route::get('evoucher-csv', 'ReportController@export_evoucher_csv')->name('report.accounting.evoucher_csv');
+            Route::get('nupsales', 'ReportController@nupsales_index')->name('report.accounting.nupsales');
+            Route::get('nupsales-csv', 'ReportController@export_nupsales_csv')->name('report.accounting.nupsales_csv');
+
         });
         
         Route::get('reward-performance', 'ReportController@reward_performance')->name('report.reward_performance');
@@ -124,6 +131,8 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::group(['prefix' => 'waste-clearance-statement'], function () {
         Route::get('/', 'WasteClearanceStatementController@index')->name('waste_clearance_statement.index');
         Route::get('view/{id}', 'WasteClearanceStatementController@view')->name('waste_clearance_statement.view');
+        Route::get('payment/{id}','WasteClearanceStatementController@payment',)->name('waste_clearance_statement.payment');
+        Route::post('insert_payment','WasteClearanceStatementController@insert_payment')->name('waste_clearance_statement.insert_payment');
     });
 
     Route::group(['prefix' => 'notfication'], function () {
