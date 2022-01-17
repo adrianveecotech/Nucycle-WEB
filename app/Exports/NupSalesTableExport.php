@@ -187,7 +187,7 @@ class NupSalesTableExport implements FromCollection,WithHeadings,WithEvents, Wit
                 $n->newdes = $n->product_des;
                 $n->newqty = $n->do_qty;
                 $n->uom = "KG";
-                $n->newinvnum = $n->sales_inv_num;
+                $n->newinvnum = $n->do_num;
                 $n->newinvdate = Carbon::parse($n->sales_inv_date)->format('Y-m-d');
                 $n->invdec = $n->product_des;
                 $n->invqty = $n->do_qty;
