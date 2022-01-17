@@ -230,28 +230,47 @@ class Helper
                 })->where('user_role.role_id', 3)->pluck('users.id')
                     ->all();
             } else if ($user_type == 'all') {
-                $user_token = User::leftJoin('user_role', function ($join) {
+                $user_token_customer = User::where('device_token', '!=', null)->where('device_token', '!=', '')->where('receive_notification', 1)->leftJoin('user_role', function ($join) {
                     $join->on('users.id', '=', 'user_role.user_id');
-                })->where(function ($query) {
-                    $query->where('device_token', '!=', null)->where('device_token', '!=', '')->where('receive_notification', 1);
-                })->where(function ($query) {
-                    $query->where('user_role.role_id', 3)
-                        ->orWhere('user_role.role_id', 2);
-                })->pluck('device_token')->all();
+                })->where('user_role.role_id', 2)->pluck('device_token')
+                    ->all();
+                $user_token_collector = User::leftJoin('user_role', function ($join) {
+                    $join->on('users.id', '=', 'user_role.user_id');
+                })->where('device_token', '!=', null)->where('device_token', '!=', '')->where('receive_notification', 1)->where('user_role.role_id', 3)->pluck('device_token')
+                    ->all();    
                 $user = User::leftJoin('user_role', function ($join) {
                     $join->on('users.id', '=', 'user_role.user_id');
                 })->where('user_role.role_id', 3)
                     ->orWhere('user_role.role_id', 2)
                     ->pluck('users.id')->all();
             }
-            $notification = array(
-                'to' => $user_token,
-                'sound' => 'default',
-                'title' => $request->title,
-                'body' =>  $request->message,
-                'priority' => 'high'
-
-            );
+            if ($user_type == 'all') {
+                $notification_customer = array(
+                    'to' => $user_token_customer,
+                    'sound' => 'default',
+                    'title' => $request->title,
+                    'body' =>  $request->message,
+                    'priority' => 'high'
+    
+                );
+                $notification_collector = array(
+                    'to' => $user_token_collector,
+                    'sound' => 'default',
+                    'title' => $request->title,
+                    'body' =>  $request->message,
+                    'priority' => 'high'
+    
+                );
+            }else{
+                $notification = array(
+                    'to' => $user_token,
+                    'sound' => 'default',
+                    'title' => $request->title,
+                    'body' =>  $request->message,
+                    'priority' => 'high'
+    
+                );
+            }
         }
         if ($request->when == 'now_from_scheduler') {
             $notification_id = $request->id;
@@ -262,7 +281,13 @@ class Helper
             $notification_db->time_sent = date("Y-m-d H:i:s");
             $notification_db->save();
 
-            Helper::sendNotification($notification);
+            if ($user_type == 'all') {
+                Helper::sendNotification($notification_customer);
+                Helper::sendNotification($notification_collector);
+            }else{
+                Helper::sendNotification($notification);
+            }
+
             foreach ($user as $value) {
                 NotificationRecipient::create([
                     'user_id' =>  $value,
@@ -271,7 +296,13 @@ class Helper
             };
         }
         if ($request->when == 'now') {
-            Helper::sendNotification($notification);
+             if ($user_type == 'all') {
+                Helper::sendNotification($notification_customer);
+                Helper::sendNotification($notification_collector);
+            }else{
+                Helper::sendNotification($notification);
+            }
+            
             $notification_id = Notification::create([
                 'title' =>  $request->title,
                 'message' => $request->message,
