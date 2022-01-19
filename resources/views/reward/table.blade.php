@@ -41,6 +41,7 @@
                             <th><span>Start Date</span></th>
                             <th><span>End Date</span></th>
                             <th><span>Status</span></th>
+                            <th><span>Usable Voucher</span></th>
                             <th><span>Action</span></th>
                         </tr>
                     </thead>

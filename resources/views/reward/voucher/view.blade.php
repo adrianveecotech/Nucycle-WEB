@@ -163,9 +163,9 @@
 
                                             <thead>
                                                 <tr>
-                                                    <th><span>Voucher code</span></th>
+                                                    <th><span>Voucher Code</span></th>
                                                     <th><span>Expiry Date</span></th>
-                                                    <th><span>Is redeem</span></th>
+                                                    <th><span>Is Used?</span></th>
                                                     <th><span>Redeemed User's Email</span></th>
                                                     <th><span>Redemption Date Time</span></th>
                                                     <th><span>Action</span></th>

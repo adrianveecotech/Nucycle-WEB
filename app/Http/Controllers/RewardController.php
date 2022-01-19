@@ -200,6 +200,8 @@ class RewardController extends Controller
         $html = '';
 
         foreach ($merchant_rewards as $merchant_reward) {
+            $usable_voucher = DB::select("SELECT count(v.id) as usable_voucher from voucher v where v.reward_id = '$merchant_reward->id' and is_redeem = 0 and expiry_date > now() and v.id NOT IN (select voucher_id from customer_reward )");
+            
             $imageSource = env('APP_URL') . '/nucycle-admin/images/reward_image/' . $merchant_reward->image;
             $html .= '<tr>';
             $html .= '<td class="lalign">';
@@ -236,6 +238,7 @@ class RewardController extends Controller
                 $html .= 'Expired';
             $html .= '<br>';
             $html .= '</td>';
+            $html .= '<td>'. $usable_voucher[0]->usable_voucher .'</td>';
             $html .= '<td>';
             $html .= '<a href="' . route("reward.view", ["id" => $merchant_reward->id]) . '" class="btn btn-xs btn-success"><i class="nav-icon fa fa-eye"></i></a>';
             $html .= '<a href="' . route("reward.edit", ["id" => $merchant_reward->id]) . '" class="btn btn-xs btn-success"><i class="nav-icon fa fa-pencil"></i></a>';
