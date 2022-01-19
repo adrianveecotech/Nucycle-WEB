@@ -160,7 +160,7 @@
             readURL(this);
         });
 
-        var javaScriptVar = '<?php echo str_replace("'","\'",$schedule->description); ?>';
+        var javaScriptVar = <?php echo str_replace("'","\'",json_encode($schedule->description)); ?>;
         $('#description').summernote({
             height: 400,
             callbacks: {

@@ -261,7 +261,7 @@
             readURL(this);
         });
 
-        var javaScriptVar = '<?php echo str_replace("'","\'",$reward->description); ?>';
+        var javaScriptVar = <?php echo str_replace("'","\'",json_encode($reward->description)); ?>;
         $('#description').summernote({
             height: 400,
             callbacks: {

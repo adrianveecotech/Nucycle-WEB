@@ -173,7 +173,7 @@
             readURL(this);
         });
 
-        var javaScriptVar = '<?php echo str_replace("'","\'",$guideline->description); ?>';
+        var javaScriptVar = <?php echo str_replace("'","\'",json_encode($guideline->description)); ?>;
         $('#description').summernote({
             height: 400,
             callbacks: {
