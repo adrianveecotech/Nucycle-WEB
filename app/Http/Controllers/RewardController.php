@@ -73,27 +73,6 @@ class RewardController extends Controller
             'status' => $request->status == "Draft" ? 0 : 1,
         ]);
 
-        if ($request->is_redeem) {
-            foreach ($request->code as $key => $value) {
-                Voucher::create([
-                    'reward_id' => $reward->id,
-                    'code' => $value,
-                    'is_redeem' => in_array("active" . $key, $request->is_redeem) ? 1 : 0,
-                    'expiry_date' => $request->end_date
-                ]);
-            }
-        } else {
-            foreach ($request->code as $key => $value) {
-                Voucher::create([
-                    'reward_id' => $reward->id,
-                    'code' => $value,
-                    'is_redeem' => 0,
-                    'expiry_date' => $request->end_date
-                ]);
-            }
-        }
-
-
         return redirect()->route('reward.index')->with('successMsg', 'Reward is created.');
     }
 
