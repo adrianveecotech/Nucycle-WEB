@@ -7,6 +7,8 @@ use App\Models\Customer;
 use App\Models\State;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Excel;
+use App\Exports\CustomerTableExport;
 
 class CustomerController extends Controller
 {
@@ -100,4 +102,9 @@ class CustomerController extends Controller
 
     //     return redirect()->route('customer.index')->with('successMsg', 'Customer is deleted.');
     // }
+
+    public function export_customer_csv()
+    {
+        return Excel::download(new CustomerTableExport,'Customer.csv');
+    }
 }

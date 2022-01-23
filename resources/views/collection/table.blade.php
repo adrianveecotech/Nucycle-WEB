@@ -44,6 +44,7 @@
                                 @if($collection->status == 1)
                                 <a href="{{route('collection.cancel', ['id' => $collection->id])}}" class="btn btn-xs btn-danger"><i class="nav-icon fa fa-ban"></i></a>
                                 @endif
+                                <a href="{{route('collection.receive', ['id' => $collection->id])}}" class="btn btn-xs btn-success"><i class="nav-icon fa fa-file"></i></a>
                             </td>
                         </tr>
                         @endforeach

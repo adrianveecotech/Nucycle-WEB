@@ -64,7 +64,7 @@
                                         <p class="qty{{$index+1}}">{{number_format((float)$item->weight, 2, '.', '')}}</p>
                                     </td>
                                     <td>
-                                        <input type="number" step=".01" class="price{{$index+1}}" name="unitprice[]" required>
+                                        <input type="number"  step=".01" class="price{{$index+1}}" name="unitprice[]" required value="{{ old("unitprice.$index") }}">
                                     </td>
                                 </tr>
                                 @endforeach
@@ -75,7 +75,7 @@
                             <label for="total_price" class="col-md-4 col-form-label text-md-right">{{ __('Total Price') }}</label>
 
                             <div class="col-md-6">
-                                <input id="total_price" type="number" value=""  step=".01" class="form-control @error('total_price') is-invalid @enderror" name="total_price" required>
+                                <input id="total_price" type="number" value="{{ old('total_price')}}"  step=".01" class="form-control @error('total_price') is-invalid @enderror" name="total_price" required>
                                 @error('total_price')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>

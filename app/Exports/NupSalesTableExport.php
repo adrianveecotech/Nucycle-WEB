@@ -79,9 +79,10 @@ class NupSalesTableExport implements FromCollection,WithHeadings,WithEvents, Wit
                         ->whereMonth('waste_clearance_schedule.collection_time',$currentMonth)
                         ->whereYear('waste_clearance_schedule.collection_time',$currentYear)
                         ->get();
-
+                        $nupsales_list = [];
             foreach($nupsales as $n)
             {
+               
                 $product_type = [];
                 $product_des = [];
                 $do_qty = [];
@@ -93,40 +94,93 @@ class NupSalesTableExport implements FromCollection,WithHeadings,WithEvents, Wit
                                                 ->get();
                 foreach($waste_clearance_schedule_item as $item)
                 {
+                    $newitem = (object)[];
                     $recycle = DB::table('recycle_type')
                             ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
                             ->select('recycle_type.name as product_des','recycle_category.name as product_type')
                             ->where('recycle_type.id',$item->type_id)
                             ->first();
-                    array_push($product_type,$recycle->product_type);
-                    array_push($product_des,$recycle->product_des);
-                    array_push($do_qty,$item->weight);
+                            if($n->do_num < 10)
+                            {
+                                $newitem->do_num = "DO-000".$n->do_num;
+                            }
+                            else if($n->do_num<100 && $n->do_num > 9)
+                            {
+                                $newitem->do_num = "DO-00".$n->do_num;
+                            }
+                            else if($n->do_num<1000 && $n->do_num > 99)
+                            {
+                                $newitem->do_num = "DO-0".$n->do_num;
+                            }
+                            else
+                            {
+                                $newitem->do_num = "DO-".$n->do_num;
+                            }
+                            $newitem->do_date = $n->do_date;
+                            $newitem->hub_location = $n->hub_location;
+                            $newitem->buyer_name = $n->buyer_name;
+                            $newitem->sales_inv_num = $n->sales_inv_num;
+                            $newitem->sales_inv_date = $n->sales_inv_date;
+                            $newitem->unit_price = 0;
+                            if($n->unit_price != null)
+                            {
+                                $price = json_decode($n->unit_price);
+                                foreach($price as $p=>$v)
+                                {
+                                    if($recycle->product_des == $p)
+                                    {
+                                        $newitem->unit_price = $v;
+                                    }
+                                }
+                            }
+                            $newitem->total_price = $n->total_price;
+                            $newitem->receipt_date = $n->receipt_date;
+                            $newitem->receipt_number = $n->receipt_number;
+                            $newitem->receipt_amount = $n->receipt_amount;
+                            $newitem->actual_cash_receive = $n->actual_cash_receive;
+                            $newitem->product_type = $recycle->product_type;
+                            $newitem->product_des = $recycle->product_des;
+                            $newitem->do_qty = $item->weight;
+                            array_push($nupsales_list,$newitem);
                 }                                
-                $n->product_type = json_encode($product_type);
-                $n->product_des = json_encode($product_des);
-                $n->do_qty = json_encode($do_qty);
+             
 
                 $n->transaction = "Sales";
                 $n->newstatus = "Successful";
-                $n->newdonum = $n->do_num;
+                if($n->do_num < 10)
+                {
+                    $n->newdonum = "DO-000".$n->do_num;
+                }
+                else if($n->do_num<100 && $n->do_num > 9)
+                {
+                    $n->newdonum = "DO-00".$n->do_num;
+                }
+                else if($n->do_num<1000 && $n->do_num > 99)
+                {
+                    $n->newdonum= "DO-0".$n->do_num;
+                }
+                else
+                {
+                    $n->newdonum= "DO-".$n->do_num;
+                }
                 $n->newdodate = Carbon::parse($n->do_date)->format('Y-m-d');
                 $n->newhub = $n->hub_location;
                 $n->newbuyer = $n->buyer_name;
-                $n->newtype = $n->product_type;
-                $n->newdes = $n->product_des;
-                $n->newqty = $n->do_qty;
+                $n->newtype = $newitem->product_type;
+                $n->newdes = $newitem->product_des;
+                $n->newqty = $newitem->do_qty;
                 $n->uom = "KG";
-                $n->newinvnum = $n->sales_inv_num;
+                $n->newinvnum = $n->do_num;
                 $n->newinvdate = Carbon::parse($n->sales_inv_date)->format('Y-m-d');
-                $n->invdec = $n->product_des;
-                $n->invqty = $n->do_qty;
+                $n->invdec = $newitem->product_des;
+                $n->invqty = $newitem->do_qty;
                 $n->invuom = "KG";
-                $n->newunitprice = $n->unit_price;
-                $n->newtotal_price = "RM".$n->total_price;
+                $n->newunitprice = "RM".number_format((float)$newitem->unit_price, 2, '.', '');
+                $n->newtotal_price = "RM".number_format((float)$n->total_price, 2, '.', '');
                 $n->newreceiptdate = Carbon::parse($n->receipt_date)->format('Y-m-d');
                 $n->newreceiptnum = $n->receipt_number;
-                $n->newreceiptamt = "RM".$n->receipt_amount;
-                $n->newreceiptcash = "RM".$n->actual_cash_receive;
+                $n->newreceiptamt = "RM".number_format((float)$n->receipt_amount, 2, '.', '');
+                $n->newreceiptcash = "RM".number_format((float)$n->actual_cash_receive, 2, '.', '');
                 unset($n->do_num); 
                 unset($n->do_date); 
                 unset($n->hub_location); 
@@ -144,6 +198,49 @@ class NupSalesTableExport implements FromCollection,WithHeadings,WithEvents, Wit
                 unset($n->do_qty); 
 
             }
+            foreach($nupsales_list as $newlist)
+            {
+                $newlist->transaction = "Sales";
+                $newlist->newstatus = "Successful";
+                $newlist->newdonum = $newlist->do_num;
+                $newlist->newdo_date = Carbon::parse($newlist->do_date)->format('Y-m-d');
+                $newlist->newhub = $newlist->hub_location;
+                $newlist->newbuyer = $newlist->buyer_name;
+                $newlist->newtype = $newlist->product_type;
+                $newlist->newdes = $newlist->product_des;
+                $newlist->newqty = $newlist->do_qty;
+                $newlist->uom = "KG";
+                $newlist->newinvnum = $newlist->do_num;
+                $newlist->newinvdate = $newlist->sales_inv_date;
+                $newlist->invdec = $newlist->product_des;
+                $newlist->invqty = $newlist->do_qty;
+                $newlist->invuom = "KG";
+                $newlist->newunitprice = "RM".number_format((float)$newlist->unit_price, 2, '.', '');
+                $newlist->newtotal_price = "RM".number_format((float)$newlist->total_price, 2, '.', '');
+                $newlist->newreceiptdate = $newlist->receipt_date;
+                $newlist->newreceiptnum = $newlist->receipt_number;
+                $newlist->newreceiptamt = "RM".number_format((float)$newlist->receipt_amount, 2, '.', '');
+                $newlist->newreceiptcash = "RM".number_format((float)$newlist->actual_cash_receive, 2, '.', '');
+               
+            }
+            foreach ($nupsales_list as $newlist)
+            {
+                unset($newlist->do_num); 
+                unset($newlist->do_date); 
+                unset($newlist->hub_location); 
+                unset($newlist->buyer_name); 
+                unset($newlist->sales_inv_num); 
+                unset($newlist->sales_inv_date); 
+                unset($newlist->unit_price);
+                unset($newlist->total_price); 
+                unset($newlist->receipt_date); 
+                unset($newlist->receipt_number);
+                unset($newlist->receipt_amount);
+                unset($newlist->actual_cash_receive);
+                unset($newlist->product_type);
+                unset($newlist->product_des); 
+                unset($newlist->do_qty); 
+            }
         }
         else
         {
@@ -152,52 +249,106 @@ class NupSalesTableExport implements FromCollection,WithHeadings,WithEvents, Wit
                         ->leftjoin('waste_clearance_schedule_payment','waste_clearance_schedule.id','=','waste_clearance_schedule_payment.waste_clearance_schedule_id')
                         ->select('waste_clearance_schedule.id as do_num','waste_clearance_schedule.collection_time as do_date','collection_hub.hub_name as hub_location','waste_clearance_schedule.buyer_name','waste_clearance_schedule_payment.id as sales_inv_num','waste_clearance_schedule_payment.invoice_date as sales_inv_date','waste_clearance_schedule_payment.unit_price','waste_clearance_schedule_payment.total_price','waste_clearance_schedule_payment.receipt_date','waste_clearance_schedule_payment.receipt_number','waste_clearance_schedule_payment.total_amount as receipt_amount','waste_clearance_schedule_payment.total_amount as actual_cash_receive')
                         ->get();
-
+            $nupsales_list = [];
+            
             foreach($nupsales as $n)
             {
-                $product_type = [];
-                $product_des = [];
-                $do_qty = [];
+                
                 $waste_clearance_schedule_item = DB::table('waste_clearance_schedule_item')
                                                 ->select('recycle_type_id as type_id','weight')
                                                 ->where('waste_clearance_schedule_id',$n->do_num)
                                                 ->get();
+                
                 foreach($waste_clearance_schedule_item as $item)
                 {
+                    $newitem = (object)[];
                     $recycle = DB::table('recycle_type')
                             ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
                             ->select('recycle_type.name as product_des','recycle_category.name as product_type')
                             ->where('recycle_type.id',$item->type_id)
                             ->first();
-                    array_push($product_type,$recycle->product_type);
-                    array_push($product_des,$recycle->product_des);
-                    array_push($do_qty,$item->weight);
+                            
+                            if($n->do_num < 10)
+                            {
+                                $newitem->do_num = "DO-000".$n->do_num;
+                            }
+                            else if($n->do_num<100 && $n->do_num > 9)
+                            {
+                                $newitem->do_num = "DO-00".$n->do_num;
+                            }
+                            else if($n->do_num<1000 && $n->do_num > 99)
+                            {
+                                $newitem->do_num = "DO-0".$n->do_num;
+                            }
+                            else
+                            {
+                                $newitem->do_num = "DO-".$n->do_num;
+                            }
+                            $newitem->do_date = $n->do_date;
+                            $newitem->hub_location = $n->hub_location;
+                            $newitem->buyer_name = $n->buyer_name;
+                            $newitem->sales_inv_num = $n->sales_inv_num;
+                            $newitem->sales_inv_date = $n->sales_inv_date;
+                            $newitem->unit_price = 0;
+                            if($n->unit_price != null)
+                            {
+                                $price = json_decode($n->unit_price);
+                                foreach($price as $p=>$v)
+                                {
+                                    if($recycle->product_des == $p)
+                                    {
+                                        $newitem->unit_price = $v;
+                                    }
+                                }
+                            }
+                            $newitem->total_price = $n->total_price;
+                            $newitem->receipt_date = $n->receipt_date;
+                            $newitem->receipt_number = $n->receipt_number;
+                            $newitem->receipt_amount = $n->receipt_amount;
+                            $newitem->actual_cash_receive = $n->actual_cash_receive;
+                            $newitem->product_type = $recycle->product_type;
+                            $newitem->product_des = $recycle->product_des;
+                            $newitem->do_qty = $item->weight;
+                            array_push($nupsales_list,$newitem);
                 }                                
-                $n->product_type = json_encode($product_type);
-                $n->product_des = json_encode($product_des);
-                $n->do_qty = json_encode($do_qty);
+                
 
                 $n->transaction = "Sales";
                 $n->newstatus = "Successful";
-                $n->newdonum = $n->do_num;
+                if($n->do_num < 10)
+                {
+                    $n->newdonum = "DO-000".$n->do_num;
+                }
+                else if($n->do_num<100 && $n->do_num > 9)
+                {
+                    $n->newdonum = "DO-00".$n->do_num;
+                }
+                else if($n->do_num<1000 && $n->do_num > 99)
+                {
+                    $n->newdonum= "DO-0".$n->do_num;
+                }
+                else
+                {
+                    $n->newdonum= "DO-".$n->do_num;
+                }
                 $n->newdodate = Carbon::parse($n->do_date)->format('Y-m-d');
                 $n->newhub = $n->hub_location;
                 $n->newbuyer = $n->buyer_name;
-                $n->newtype = $n->product_type;
-                $n->newdes = $n->product_des;
-                $n->newqty = $n->do_qty;
+                $n->newtype = $newitem->product_type;
+                $n->newdes = $newitem->product_des;
+                $n->newqty = $newitem->do_qty;
                 $n->uom = "KG";
                 $n->newinvnum = $n->do_num;
                 $n->newinvdate = Carbon::parse($n->sales_inv_date)->format('Y-m-d');
-                $n->invdec = $n->product_des;
-                $n->invqty = $n->do_qty;
+                $n->invdec = $newitem->product_des;
+                $n->invqty = $newitem->do_qty;
                 $n->invuom = "KG";
-                $n->newunitprice = $n->unit_price;
-                $n->newtotal_price = "RM".$n->total_price;
+                $n->newunitprice = "RM".number_format((float)$newitem->unit_price, 2, '.', '');
+                $n->newtotal_price = "RM".number_format((float)$n->total_price, 2, '.', '');
                 $n->newreceiptdate = Carbon::parse($n->receipt_date)->format('Y-m-d');
                 $n->newreceiptnum = $n->receipt_number;
-                $n->newreceiptamt = "RM".$n->receipt_amount;
-                $n->newreceiptcash = "RM".$n->actual_cash_receive;
+                $n->newreceiptamt = "RM".number_format((float)$n->receipt_amount, 2, '.', '');
+                $n->newreceiptcash = "RM".number_format((float)$n->actual_cash_receive, 2, '.', '');
                 unset($n->do_num); 
                 unset($n->do_date); 
                 unset($n->hub_location); 
@@ -216,9 +367,50 @@ class NupSalesTableExport implements FromCollection,WithHeadings,WithEvents, Wit
 
                 
             }
-        }
-        
-            
-            return collect($nupsales);
+            foreach($nupsales_list as $newlist)
+            {
+                $newlist->transaction = "Sales";
+                $newlist->newstatus = "Successful";
+                $newlist->newdonum = $newlist->do_num;
+                $newlist->newdo_date = Carbon::parse($newlist->do_date)->format('Y-m-d');
+                $newlist->newhub = $newlist->hub_location;
+                $newlist->newbuyer = $newlist->buyer_name;
+                $newlist->newtype = $newlist->product_type;
+                $newlist->newdes = $newlist->product_des;
+                $newlist->newqty = $newlist->do_qty;
+                $newlist->uom = "KG";
+                $newlist->newinvnum = $newlist->do_num;
+                $newlist->newinvdate = $newlist->sales_inv_date;
+                $newlist->invdec = $newlist->product_des;
+                $newlist->invqty = $newlist->do_qty;
+                $newlist->invuom = "KG";
+                $newlist->newunitprice = "RM".number_format((float)$newlist->unit_price, 2, '.', '');
+                $newlist->newtotal_price = "RM".number_format((float)$newlist->total_price, 2, '.', '');
+                $newlist->newreceiptdate = $newlist->receipt_date;
+                $newlist->newreceiptnum = $newlist->receipt_number;
+                $newlist->newreceiptamt = "RM".number_format((float)$newlist->receipt_amount, 2, '.', '');
+                $newlist->newreceiptcash = "RM".number_format((float)$newlist->actual_cash_receive, 2, '.', '');
+               
+            }
+            foreach ($nupsales_list as $newlist)
+            {
+                unset($newlist->do_num); 
+                unset($newlist->do_date); 
+                unset($newlist->hub_location); 
+                unset($newlist->buyer_name); 
+                unset($newlist->sales_inv_num); 
+                unset($newlist->sales_inv_date); 
+                unset($newlist->unit_price);
+                unset($newlist->total_price); 
+                unset($newlist->receipt_date); 
+                unset($newlist->receipt_number);
+                unset($newlist->receipt_amount);
+                unset($newlist->actual_cash_receive);
+                unset($newlist->product_type);
+                unset($newlist->product_des); 
+                unset($newlist->do_qty); 
+            }
+        }   
+        return collect($nupsales_list);
     }
 }

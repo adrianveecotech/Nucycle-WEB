@@ -18,7 +18,8 @@ class WasteClearanceStatementController extends Controller
     public function index()
     {
         $schedules = WasteClearanceSchedule::where('status', 2)->get();
-        return view('waste_clearance_statement.index', compact('schedules'));
+        $waste = WasteClearanceSchedulePayment::pluck('waste_clearance_schedule_id')->toArray();
+        return view('waste_clearance_statement.index', compact('schedules','waste'));
     }
 
     public function view($id)
@@ -31,7 +32,12 @@ class WasteClearanceStatementController extends Controller
 
     public function payment($id)
     {
-        $items = WasteClearanceItem::where('waste_clearance_schedule_id', $id)->join('recycle_type', 'recycle_type.id', '=', 'waste_clearance_item.recycle_type_id')->get(['recycle_type.name', 'waste_clearance_item.recycle_type_id', 'weight']);
+        $items = DB::table('waste_clearance_schedule_item')
+        ->join('recycle_type','recycle_type.id','=','waste_clearance_schedule_item.recycle_type_id')
+        ->select('recycle_type.name', 'waste_clearance_schedule_item.recycle_type_id', 'weight')
+        ->where('waste_clearance_schedule_id',$id)
+        ->get();
+        
         return view('waste_clearance_statement.payment',compact('id','items'));
     }
 

@@ -12,6 +12,7 @@
                 <table class="table table-striped" id="tableMain">
                     <thead>
                         <tr>
+                            <th><span>Id</span></th>
                             <th><span>Name</span></th>
                             <th><span>Email</span></th>
                             <th><span>Phone</span></th>
@@ -25,6 +26,7 @@
                     <tbody>
                         @foreach($customers as $customer)
                         <tr>
+                            <td>{{$customer->user_id}}</td>
                             <td class="lalign">{{$customer->name}}</td>
                             <td>{{$customer->email}}</td>
                             <td>{{$customer->phone}}</td>

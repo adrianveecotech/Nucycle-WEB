@@ -207,6 +207,12 @@ class Helper
         return $do;
     }
 
+    public static function lpadClearanceId_PO($id)
+    {
+        $do = "PO-" . str_pad($id, 4, '0', STR_PAD_LEFT);
+        return $do;
+    }
+
     public static function webSendNotification($request)
     {
         if ($request->when == 'now' || $request->when == 'now_from_scheduler') {

@@ -33,7 +33,9 @@
                             <td>{{$schedule->buyer_name}}</td>
                             <td>
                                 <a href="{{route('waste_clearance_statement.view', ['id' => $schedule->id])}}" class="btn btn-xs btn-success"><i class="nav-icon fa fa-eye"></i></a>
+                                @if(!in_array($schedule->id,$waste))
                                 <a href="{{route('waste_clearance_statement.payment', ['id' => $schedule->id])}}" class="btn btn-xs btn-success"><i class="nav-icon fa fa-file"></i></a>
+                                @endif
                             </td>
                         </tr>
                         @endforeach

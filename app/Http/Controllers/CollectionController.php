@@ -12,6 +12,8 @@ use App\Models\Customer;
 use App\Models\CustomerMembership;
 use App\Models\CustomerPointTransaction;
 use App\Models\Level;
+use App\Models\ContactUsInfo;
+use Illuminate\Support\Facades\DB;
 use Auth;
 
 class CollectionController extends Controller
@@ -28,6 +30,15 @@ class CollectionController extends Controller
         }
     }
 
+    public function receive($id)
+    {
+        $collection = Collection::find($id);
+        $customer = DB::table('customer')->where('id',$collection->customer_id)->first();
+        //$schedule = WasteClearanceSchedule::find($id);
+        $company_info = ContactUsInfo::first();
+        $items = CollectionDetail::where('collection_id', $id)->join('recycle_type', 'recycle_type.id', '=', 'collection_detail.recycling_type_id')->get(['recycle_type.name', 'weight']);
+        return view('collection.receive', compact('collection', 'customer','id','company_info','items'));
+    }
     public function view($id)
     {
         $collection = Collection::find($id);

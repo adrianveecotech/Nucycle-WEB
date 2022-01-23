@@ -65,6 +65,8 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
             Route::post('epoint_filter', 'ReportController@epoint_filter')->name('report.accounting.epoint_filter');
             Route::post('evoucher_filter', 'ReportController@evoucher_filter')->name('report.accounting.evoucher_filter');
             Route::post('nupsales_filter', 'ReportController@nupsales_filter')->name('report.accounting.nupsales_filter');
+            Route::post('closingstock_filter', 'ReportController@closingstock_filter')->name('report.accounting.closingstock_filter');
+            Route::post('inventory_filter', 'ReportController@inventory_filter')->name('report.accounting.inventory_filter');
             Route::get('nuppurchase', 'ReportController@nuppurchase_index')->name('report.accounting.nuppurchase');
             Route::get('nuppurchase-csv', 'ReportController@export_nuppurchase_csv')->name('report.accounting.nuppurchase_csv');
             Route::get('epoint', 'ReportController@epoint_index')->name('report.accounting.epoint');
@@ -73,6 +75,10 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
             Route::get('evoucher-csv', 'ReportController@export_evoucher_csv')->name('report.accounting.evoucher_csv');
             Route::get('nupsales', 'ReportController@nupsales_index')->name('report.accounting.nupsales');
             Route::get('nupsales-csv', 'ReportController@export_nupsales_csv')->name('report.accounting.nupsales_csv');
+            Route::get('inventory', 'ReportController@inventory_index')->name('report.accounting.inventory');
+            Route::get('inventory-csv', 'ReportController@export_inventory_csv')->name('report.accounting.inventory_csv');
+            Route::get('closingstock', 'ReportController@closingstock_index')->name('report.accounting.closingstock');
+            Route::get('closingstock-csv', 'ReportController@export_closingstock_csv')->name('report.accounting.closingstock_csv');
 
         });
         
@@ -204,6 +210,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
         Route::get('create', 'CustomerController@create')->name('customer.create');
         Route::get('edit/{id}', 'CustomerController@edit')->name('customer.edit');
         Route::get('view/{id}', 'CustomerController@view')->name('customer.view');
+        Route::get('customer-csv', 'CustomerController@export_customer_csv')->name('user.customer_csv');
         // Route::get('delete/{id}', 'CustomerController@delete')->name('customer.delete');
         Route::post('edit', 'CustomerController@edit_db')->name('customer.edit_db');
         Route::post('insert', 'CustomerController@insert')->name('customer.insert_db');
@@ -368,6 +375,7 @@ Route::group(['middleware' => ['auth', 'admin_hubadmin']], function () {
         Route::get('edit/{id}', 'CollectionController@edit')->name('collection.edit');
         Route::post('edit', 'CollectionController@edit_db')->name('collection.edit_db');
         Route::get('view/{id}', 'CollectionController@view')->name('collection.view');
+        Route::get('receive/{id}', 'CollectionController@receive')->name('collection.receive');
         Route::get('cancel/{id}', 'CollectionController@cancel')->name('collection.cancel');
     });
 

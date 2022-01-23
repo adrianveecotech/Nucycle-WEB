@@ -47,7 +47,7 @@
                             @else
                             <td>{{Carbon\Carbon::parse($nupsale->sales_inv_date)->format('Y-m-d')}}</td>
                             @endif
-                            <td>{{$nupsale->unit_price}}</td>
+                            <td>RM{{number_format($nupsale->unit_price, 2, '.', '')}}</td>
                             <td>RM{{number_format($nupsale->total_price, 2, '.', '')}}</td>
                             @if($nupsale->receipt_date == null)
                                 <td></td>

@@ -25,6 +25,9 @@
       </ul>
     </div>
     <div class="card-body">
+      <div class="text-right pb-2">
+        <a href="{!! route('user.customer_csv') !!}" id="btn_csv" class="btn btn-xs btn-success ml-2">CSV</a>
+      </div>
       @include('customer.table')
       <div class="clearfix"></div>
     </div>

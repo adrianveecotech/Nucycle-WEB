@@ -32,6 +32,8 @@ use App\Exports\NupTableExport;
 use App\Exports\EPointTableExport;
 use App\Exports\EVoucherTableExport;
 use App\Exports\NupSalesTableExport;
+use App\Exports\InventoryTableExport;
+use App\Exports\ClosingStockTableExport;
 use Excel;
 
 
@@ -4557,11 +4559,15 @@ class ReportController extends Controller
             {
                 $currentMonthBalance = DB::table('customer_point_transaction')->where('customer_id',$e->cus_id)->whereMonth('created_at',$currentMonth)
                 ->whereYear('created_at',$currentYear)->sum('balance');
+
                 $totalBalance = DB::table('customer_point_transaction')->where('customer_id',$e->cus_id)
                 ->whereMonth('created_at','<=',$currentMonth)
-                ->whereYear('created_at','<=',$currentYear)
+                ->whereYear('created_at','=',$currentYear)
                 ->sum('balance');
-    
+                $previousTotalBalance = DB::table('customer_point_transaction')->where('customer_id',$e->cus_id)
+                ->whereYear('created_at','<',$currentYear)
+                ->sum('balance');
+                $totalBalance = $totalBalance + $previousTotalBalance;
                 if(is_null($currentMonthBalance))
                 {
                     $currentMonthBalance = 0;
@@ -4678,16 +4684,14 @@ class ReportController extends Controller
                     ->leftjoin('waste_clearance_schedule_payment','waste_clearance_schedule.id','=','waste_clearance_schedule_payment.waste_clearance_schedule_id')
                     ->select('waste_clearance_schedule.id as do_num','waste_clearance_schedule.collection_time as do_date','collection_hub.hub_name as hub_location','waste_clearance_schedule.buyer_name','waste_clearance_schedule_payment.id as sales_inv_num','waste_clearance_schedule_payment.invoice_date as sales_inv_date','waste_clearance_schedule_payment.unit_price','waste_clearance_schedule_payment.total_price','waste_clearance_schedule_payment.receipt_date','waste_clearance_schedule_payment.receipt_number','waste_clearance_schedule_payment.total_amount as receipt_amount','waste_clearance_schedule_payment.total_amount as actual_cash_receive')
                     ->get();
-
+        $nupsales_list = [];
         foreach($nupsales as $n)
         {
-            $product_type = [];
-            $product_des = [];
-            $do_qty = [];
             $waste_clearance_schedule_item = DB::table('waste_clearance_schedule_item')
                                             ->select('recycle_type_id as type_id','weight')
                                             ->where('waste_clearance_schedule_id',$n->do_num)
                                             ->get();
+            
             foreach($waste_clearance_schedule_item as $item)
             {
                 $recycle = DB::table('recycle_type')
@@ -4695,15 +4699,53 @@ class ReportController extends Controller
                         ->select('recycle_type.name as product_des','recycle_category.name as product_type')
                         ->where('recycle_type.id',$item->type_id)
                         ->first();
-                array_push($product_type,$recycle->product_type);
-                array_push($product_des,$recycle->product_des);
-                array_push($do_qty,$item->weight);
-            }                                
-            $n->product_type = json_encode($product_type);
-            $n->product_des = json_encode($product_des);
-            $n->do_qty = json_encode($do_qty);
-        }
+                $newitem = (object)[];
+                if($n->do_num < 10)
+                {
+                    $newitem->do_num = "DO-000".$n->do_num;
+                }
+                else if($n->do_num<100 && $n->do_num > 9)
+                {
+                    $newitem->do_num = "DO-00".$n->do_num;
+                }
+                else if($n->do_num<1000 && $n->do_num > 99)
+                {
+                    $newitem->do_num = "DO-0".$n->do_num;
+                }
+                else
+                {
+                    $newitem->do_num = "DO-".$n->do_num;
+                }
+                $newitem->do_date = $n->do_date;
+                $newitem->hub_location = $n->hub_location;
+                $newitem->buyer_name = $n->buyer_name;
+                $newitem->sales_inv_num = $n->sales_inv_num;
+                $newitem->sales_inv_date = $n->sales_inv_date;
+                $newitem->unit_price = 0;
+                if($n->unit_price != null)
+                {
+                    $price = json_decode($n->unit_price);
+                    foreach($price as $p=>$v)
+                    {
+                        if($recycle->product_des == $p)
+                        {
+                            $newitem->unit_price = $v;
+                        }
+                    }
+                }
+                $newitem->total_price = $n->total_price;
+                $newitem->receipt_date = $n->receipt_date;
+                $newitem->receipt_number = $n->receipt_number;
+                $newitem->receipt_amount = $n->receipt_amount;
+                $newitem->actual_cash_receive = $n->actual_cash_receive;
+                $newitem->product_type = $recycle->product_type;
+                $newitem->product_des = $recycle->product_des;
+                $newitem->do_qty = $item->weight;
+                array_push($nupsales_list,$newitem);
 
+            }      
+        }
+        $nupsales = $nupsales_list;
         if(session()->has('monthinnum'))
         {
             $request->session()->forget('monthinnum');
@@ -4734,7 +4776,7 @@ class ReportController extends Controller
                         ->whereMonth('waste_clearance_schedule.collection_time',$monthinnum)
                         ->whereYear('waste_clearance_schedule.collection_time',$year)
                         ->get();
-
+            $nupsales_list = [];
             foreach($nupsales as $n)
             {
                 $product_type = [];
@@ -4753,14 +4795,53 @@ class ReportController extends Controller
                             ->select('recycle_type.name as product_des','recycle_category.name as product_type')
                             ->where('recycle_type.id',$item->type_id)
                             ->first();
-                    array_push($product_type,$recycle->product_type);
-                    array_push($product_des,$recycle->product_des);
-                    array_push($do_qty,$item->weight);
+                            $newitem = (object)[];
+                            if($n->do_num < 10)
+                            {
+                                $newitem->do_num = "DO-000".$n->do_num;
+                            }
+                            else if($n->do_num<100 && $n->do_num > 9)
+                            {
+                                $newitem->do_num = "DO-00".$n->do_num;
+                            }
+                            else if($n->do_num<1000 && $n->do_num > 99)
+                            {
+                                $newitem->do_num = "DO-0".$n->do_num;
+                            }
+                            else
+                            {
+                                $newitem->do_num = "DO-".$n->do_num;
+                            }
+                            $newitem->do_date = $n->do_date;
+                            $newitem->hub_location = $n->hub_location;
+                            $newitem->buyer_name = $n->buyer_name;
+                            $newitem->sales_inv_num = $n->sales_inv_num;
+                            $newitem->sales_inv_date = $n->sales_inv_date;
+                            $newitem->unit_price = 0;
+                            if($n->unit_price != null)
+                            {
+                                $price = json_decode($n->unit_price);
+                                foreach($price as $p=>$v)
+                                {
+                                    if($recycle->product_des == $p)
+                                    {
+                                        $newitem->unit_price = $v;
+                                    }
+                                }
+                            }
+                            $newitem->total_price = $n->total_price;
+                            $newitem->receipt_date = $n->receipt_date;
+                            $newitem->receipt_number = $n->receipt_number;
+                            $newitem->receipt_amount = $n->receipt_amount;
+                            $newitem->actual_cash_receive = $n->actual_cash_receive;
+                            $newitem->product_type = $recycle->product_type;
+                            $newitem->product_des = $recycle->product_des;
+                            $newitem->do_qty = $item->weight;
+                            array_push($nupsales_list,$newitem);
                 }                                
-                $n->product_type = json_encode($product_type);
-                $n->product_des = json_encode($product_des);
-                $n->do_qty = json_encode($do_qty);
             }
+
+            $nupsales = $nupsales_list;
 
             if(session()->has('monthinnum'))
             {
@@ -4788,5 +4869,547 @@ class ReportController extends Controller
     public function export_nupsales_csv()
     {
         return Excel::download(new NupSalesTableExport,'NupSales.csv');
+    }
+
+    public function inventory_index(Request $request)
+    {
+        $current = Carbon::now();
+        $currentMonth = $current->month;
+        $currentYear = $current->year;
+
+        $collection1 = DB::table('collection_detail')->join('recycle_type','collection_detail.recycling_type_id','=','recycle_type.id')
+                    ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+                    ->whereYear('collection_detail.created_at','<',$currentYear)
+                    ->get();
+
+        $collection2 = DB::table('collection_detail')->join('recycle_type','collection_detail.recycling_type_id','=','recycle_type.id')
+                    ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+                    ->whereMonth('collection_detail.created_at','<',$currentMonth)
+                    ->whereYear('collection_detail.created_at','=',$currentYear)
+                    ->get();
+        $collection1n2 = $collection1->merge($collection2);
+        $collection3 = DB::table('collection_detail')->join('recycle_type','collection_detail.recycling_type_id','=','recycle_type.id')
+                    ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+                    ->whereMonth('collection_detail.created_at','=',$currentMonth)
+                    ->whereYear('collection_detail.created_at','=',$currentYear)
+                    ->get();
+        //dd($collection2);
+        $category = DB::table('recycle_category')->select('id','name')->get();
+        
+        foreach($category as $cate)
+        {
+            $cate->balqty = 0;
+            $cate->balamt = 0;
+            $cate->purchaseqty = 0;
+            $cate->purchaseamt = 0;
+        }
+
+        foreach($collection1n2 as $c)
+        {
+            foreach($category as $cate)
+            {
+                if($c->recycle_category_id == $cate->id)
+                {
+                    $cate->balqty += $c->weight;
+                    $cate->balamt += $c->total_point/100;
+                }
+            }
+        }
+        if($collection3->isEmpty())
+        {
+            foreach($category as $cate)
+            {
+                $cate->purchaseqty = 0;
+                $cate->purchaseamt = 0;   
+            }
+        }
+        else
+        {
+            foreach($collection3 as $c)
+            {
+                foreach($category as $cate)
+                {
+                    if($c->recycle_category_id == $cate->id)
+                    {
+                    $cate->purchaseqty += $c->weight;
+                    $cate->purchaseamt += $c->total_point/100;
+                    }
+                    if($c->recycle_category_id == $cate->id)
+                    {
+                    $cate->purchaseqty += 0;
+                    $cate->purchaseamt += 0;
+                    }
+                }
+            }
+        }
+        foreach($category as $c)
+        {
+            if($c->balqty + $c->purchaseqty == 0)
+            {
+                $c->avgcost = 0;
+            }
+            else
+            {
+                $c->avgcost = round(($c->balamt+$c->purchaseamt) / ($c->balqty + $c->purchaseqty),2);
+            }
+            $previous_waste_clearance_item = DB::table('waste_clearance_schedule_item')->join('recycle_type','waste_clearance_schedule_item.recycle_type_id','=','recycle_type.id')
+            ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+            ->where('recycle_category.id',$c->id)
+            ->whereYear('waste_clearance_schedule_item.created_at','<',$currentYear)
+            ->select(DB::raw("SUM(waste_clearance_schedule_item.weight) as weight"))->get();
+            $current_waste_clearance_item = DB::table('waste_clearance_schedule_item')->join('recycle_type','waste_clearance_schedule_item.recycle_type_id','=','recycle_type.id')
+            ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+            ->where('recycle_category.id',$c->id)
+            ->whereMonth('waste_clearance_schedule_item.created_at','<=',$currentMonth)
+            ->whereYear('waste_clearance_schedule_item.created_at','=',$currentYear)
+            ->select(DB::raw("SUM(waste_clearance_schedule_item.weight) as weight"))->get();
+            $previous_weight = 0;
+            $current_weight = 0;
+            if(!($previous_waste_clearance_item->isEmpty()))
+            {
+                $previous_weight = $previous_waste_clearance_item[0]->weight;
+            }
+            if(!($current_waste_clearance_item->isEmpty()))
+            {
+                $current_weight = $current_waste_clearance_item[0]->weight;
+            }
+            $salesqty = round($previous_weight + $current_weight,2);
+            $c->salesqty = $salesqty;
+            $c->salesamt = round($c->salesqty * $c->avgcost,2);
+            $c->adjustqty = $c->salesqty - ($c->balqty + $c->purchaseqty);
+            $c->adjustamt = round($c->adjustqty * $c->avgcost,2);
+            $c->currentqty = round(($c->balqty + $c->purchaseamt) - ($c->salesamt + $c->adjustqty),2);
+            $c->currentamt = round($c->currentqty * $c->avgcost,2);
+
+        }
+        //dd($category);    
+        if(session()->has('monthinnum'))
+        {
+            $request->session()->forget('monthinnum');
+        }
+        else if(session()->has('month'))
+        {
+            $request->session()->forget('month');
+        }
+        else if(session()->has('year'))
+        {
+            $request->session()->forget('year');
+        }
+       
+        return view('report.accounting.inventory',compact('category'));        
+    }
+    
+    public function inventory_filter(Request $request)
+    {
+        if(!empty($request->input('month')))
+        {
+            $monthinnum = date('m',strtotime($request->input('month')));
+            $month = date('M',strtotime($request->input('month')));
+            $year = date('Y',strtotime($request->input('month')));
+            $currentMonth = $monthinnum;
+            $currentYear = $year;
+            $collection1 = DB::table('collection_detail')->join('recycle_type','collection_detail.recycling_type_id','=','recycle_type.id')
+            ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+            ->whereYear('collection_detail.created_at','<',$currentYear)
+            ->get();
+
+            $collection2 = DB::table('collection_detail')->join('recycle_type','collection_detail.recycling_type_id','=','recycle_type.id')
+                        ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+                        ->whereMonth('collection_detail.created_at','<',$currentMonth)
+                        ->whereYear('collection_detail.created_at','=',$currentYear)
+                        ->get();
+            $collection1n2 = $collection1->merge($collection2);
+            $collection3 = DB::table('collection_detail')->join('recycle_type','collection_detail.recycling_type_id','=','recycle_type.id')
+                        ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+                        ->whereMonth('collection_detail.created_at','=',$currentMonth)
+                        ->whereYear('collection_detail.created_at','=',$currentYear)
+                        ->get();
+            //dd($collection2);
+            $category = DB::table('recycle_category')->select('id','name')->get();
+
+            foreach($category as $cate)
+            {
+                $cate->balqty = 0;
+                $cate->balamt = 0;
+                $cate->purchaseqty = 0;
+                $cate->purchaseamt = 0;
+            }
+
+            foreach($collection1n2 as $c)
+            {
+                foreach($category as $cate)
+                {
+                    if($c->recycle_category_id == $cate->id)
+                    {
+                        $cate->balqty += $c->weight;
+                        $cate->balamt += $c->total_point/100;
+                    }
+                }
+            }
+            if($collection3->isEmpty())
+            {
+                foreach($category as $cate)
+                {
+                    $cate->purchaseqty = 0;
+                    $cate->purchaseamt = 0;   
+                }
+            }
+            else
+            {
+                foreach($collection3 as $c)
+                {
+                    foreach($category as $cate)
+                    {
+                        if($c->recycle_category_id == $cate->id)
+                        {
+                        $cate->purchaseqty += $c->weight;
+                        $cate->purchaseamt += $c->total_point/100;
+                        }
+                        if($c->recycle_category_id == $cate->id)
+                        {
+                        $cate->purchaseqty += 0;
+                        $cate->purchaseamt += 0;
+                        }
+                    }
+                }
+            }
+            foreach($category as $c)
+            {
+                if($c->balqty + $c->purchaseqty == 0)
+                {
+                    $c->avgcost = 0;
+                }
+                else
+                {
+                    $c->avgcost = round(($c->balamt+$c->purchaseamt) / ($c->balqty + $c->purchaseqty),2);
+                }
+                $previous_waste_clearance_item = DB::table('waste_clearance_schedule_item')->join('recycle_type','waste_clearance_schedule_item.recycle_type_id','=','recycle_type.id')
+                ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+                ->where('recycle_category.id',$c->id)
+                ->whereYear('waste_clearance_schedule_item.created_at','<',$currentYear)
+                ->select(DB::raw("SUM(waste_clearance_schedule_item.weight) as weight"))->get();
+                $current_waste_clearance_item = DB::table('waste_clearance_schedule_item')->join('recycle_type','waste_clearance_schedule_item.recycle_type_id','=','recycle_type.id')
+                ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+                ->where('recycle_category.id',$c->id)
+                ->whereMonth('waste_clearance_schedule_item.created_at','<=',$currentMonth)
+                ->whereYear('waste_clearance_schedule_item.created_at','=',$currentYear)
+                ->select(DB::raw("SUM(waste_clearance_schedule_item.weight) as weight"))->get();
+                $previous_weight = 0;
+                $current_weight = 0;
+                if(!($previous_waste_clearance_item->isEmpty()))
+                {
+                    $previous_weight = $previous_waste_clearance_item[0]->weight;
+                }
+                if(!($current_waste_clearance_item->isEmpty()))
+                {
+                    $current_weight = $current_waste_clearance_item[0]->weight;
+                }
+                $salesqty = round($previous_weight + $current_weight,2);
+                $c->salesqty = $salesqty;
+                $c->salesamt = round($c->salesqty * $c->avgcost,2);
+                $c->adjustqty = $c->salesqty - ($c->balqty + $c->purchaseqty);
+                $c->adjustamt = round($c->adjustqty * $c->avgcost,2);
+                $c->currentqty = round(($c->balqty + $c->purchaseamt) - ($c->salesamt + $c->adjustqty),2);
+                $c->currentamt = round($c->currentqty * $c->avgcost,2);
+
+            }
+
+            if(session()->has('monthinnum'))
+            {
+                $request->session()->forget('monthinnum');
+            }
+            else if(session()->has('month'))
+            {
+                $request->session()->forget('month');
+            }
+            else if(session()->has('year'))
+            {
+                $request->session()->forget('year');
+            }
+            session(['monthinnum' => $monthinnum]);
+            session(['month' => $month]);
+            session(['year'=>$year]);
+            return view('report.accounting.inventory',compact('category'));
+        }
+        else
+        {
+            return redirect()->route('report.accounting.inventory');
+        }
+    }
+
+    public function export_inventory_csv()
+    {
+        return Excel::download(new InventoryTableExport,'Inventory.csv');
+    }
+
+    public function closingstock_index(Request $request)
+    {
+        $current = Carbon::now();
+        $currentMonth = $current->month;
+        $currentYear = $current->year;
+
+        $collection1 = DB::table('collection_detail')->join('recycle_type','collection_detail.recycling_type_id','=','recycle_type.id')
+                    ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+                    ->whereYear('collection_detail.created_at','<',$currentYear)
+                    ->get();
+
+        $collection2 = DB::table('collection_detail')->join('recycle_type','collection_detail.recycling_type_id','=','recycle_type.id')
+                    ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+                    ->whereMonth('collection_detail.created_at','<',$currentMonth)
+                    ->whereYear('collection_detail.created_at','=',$currentYear)
+                    ->get();
+        $collection1n2 = $collection1->merge($collection2);
+        $collection3 = DB::table('collection_detail')->join('recycle_type','collection_detail.recycling_type_id','=','recycle_type.id')
+                    ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+                    ->whereMonth('collection_detail.created_at','=',$currentMonth)
+                    ->whereYear('collection_detail.created_at','=',$currentYear)
+                    ->get();
+        //dd($collection2);
+        $category = DB::table('recycle_category')->select('id','name')->get();
+        
+        foreach($category as $cate)
+        {
+            $cate->balqty = 0;
+            $cate->balamt = 0;
+            $cate->purchaseqty = 0;
+            $cate->purchaseamt = 0;
+        }
+
+        foreach($collection1n2 as $c)
+        {
+            foreach($category as $cate)
+            {
+                if($c->recycle_category_id == $cate->id)
+                {
+                    $cate->balqty += $c->weight;
+                    $cate->balamt += $c->total_point/100;
+                }
+            }
+        }
+        if($collection3->isEmpty())
+        {
+            foreach($category as $cate)
+            {
+                $cate->purchaseqty = 0;
+                $cate->purchaseamt = 0;   
+            }
+        }
+        else
+        {
+            foreach($collection3 as $c)
+            {
+                foreach($category as $cate)
+                {
+                    if($c->recycle_category_id == $cate->id)
+                    {
+                    $cate->purchaseqty += $c->weight;
+                    $cate->purchaseamt += $c->total_point/100;
+                    }
+                    if($c->recycle_category_id == $cate->id)
+                    {
+                    $cate->purchaseqty += 0;
+                    $cate->purchaseamt += 0;
+                    }
+                }
+            }
+        }
+        foreach($category as $c)
+        {
+            if($c->balqty + $c->purchaseqty == 0)
+            {
+                $c->avgcost = 0;
+            }
+            else
+            {
+                $c->avgcost = round(($c->balamt+$c->purchaseamt) / ($c->balqty + $c->purchaseqty),2);
+            }
+            $previous_waste_clearance_item = DB::table('waste_clearance_schedule_item')->join('recycle_type','waste_clearance_schedule_item.recycle_type_id','=','recycle_type.id')
+            ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+            ->where('recycle_category.id',$c->id)
+            ->whereYear('waste_clearance_schedule_item.created_at','<',$currentYear)
+            ->select(DB::raw("SUM(waste_clearance_schedule_item.weight) as weight"))->get();
+            $current_waste_clearance_item = DB::table('waste_clearance_schedule_item')->join('recycle_type','waste_clearance_schedule_item.recycle_type_id','=','recycle_type.id')
+            ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+            ->where('recycle_category.id',$c->id)
+            ->whereMonth('waste_clearance_schedule_item.created_at','<=',$currentMonth)
+            ->whereYear('waste_clearance_schedule_item.created_at','=',$currentYear)
+            ->select(DB::raw("SUM(waste_clearance_schedule_item.weight) as weight"))->get();
+            $previous_weight = 0;
+            $current_weight = 0;
+            if(!($previous_waste_clearance_item->isEmpty()))
+            {
+                $previous_weight = $previous_waste_clearance_item[0]->weight;
+            }
+            if(!($current_waste_clearance_item->isEmpty()))
+            {
+                $current_weight = $current_waste_clearance_item[0]->weight;
+            }
+            $salesqty = round($previous_weight + $current_weight,2);
+            $c->salesqty = $salesqty;
+            $c->salesamt = round($c->salesqty * $c->avgcost,2);
+            $c->adjustqty = $c->salesqty - ($c->balqty + $c->purchaseqty);
+            $c->adjustamt = round($c->adjustqty * $c->avgcost,2);
+            $c->currentqty = round(($c->balqty + $c->purchaseamt) - ($c->salesamt + $c->adjustqty),2);
+            $c->currentamt = round($c->currentqty * $c->avgcost,2);
+
+        }
+        //dd($category);    
+        if(session()->has('monthinnum'))
+        {
+            $request->session()->forget('monthinnum');
+        }
+        else if(session()->has('month'))
+        {
+            $request->session()->forget('month');
+        }
+        else if(session()->has('year'))
+        {
+            $request->session()->forget('year');
+        }
+       
+        return view('report.accounting.closing',compact('category'));    
+    }
+    
+    public function closingstock_filter(Request $request)
+    {
+        if(!empty($request->input('month')))
+        {
+            $monthinnum = date('m',strtotime($request->input('month')));
+            $month = date('M',strtotime($request->input('month')));
+            $year = date('Y',strtotime($request->input('month')));
+            $currentMonth = $monthinnum;
+            $currentYear = $year;
+            $collection1 = DB::table('collection_detail')->join('recycle_type','collection_detail.recycling_type_id','=','recycle_type.id')
+            ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+            ->whereYear('collection_detail.created_at','<',$currentYear)
+            ->get();
+
+            $collection2 = DB::table('collection_detail')->join('recycle_type','collection_detail.recycling_type_id','=','recycle_type.id')
+                        ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+                        ->whereMonth('collection_detail.created_at','<',$currentMonth)
+                        ->whereYear('collection_detail.created_at','=',$currentYear)
+                        ->get();
+            $collection1n2 = $collection1->merge($collection2);
+            $collection3 = DB::table('collection_detail')->join('recycle_type','collection_detail.recycling_type_id','=','recycle_type.id')
+                        ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+                        ->whereMonth('collection_detail.created_at','=',$currentMonth)
+                        ->whereYear('collection_detail.created_at','=',$currentYear)
+                        ->get();
+            //dd($collection2);
+            $category = DB::table('recycle_category')->select('id','name')->get();
+
+            foreach($category as $cate)
+            {
+                $cate->balqty = 0;
+                $cate->balamt = 0;
+                $cate->purchaseqty = 0;
+                $cate->purchaseamt = 0;
+            }
+
+            foreach($collection1n2 as $c)
+            {
+                foreach($category as $cate)
+                {
+                    if($c->recycle_category_id == $cate->id)
+                    {
+                        $cate->balqty += $c->weight;
+                        $cate->balamt += $c->total_point/100;
+                    }
+                }
+            }
+            if($collection3->isEmpty())
+            {
+                foreach($category as $cate)
+                {
+                    $cate->purchaseqty = 0;
+                    $cate->purchaseamt = 0;   
+                }
+            }
+            else
+            {
+                foreach($collection3 as $c)
+                {
+                    foreach($category as $cate)
+                    {
+                        if($c->recycle_category_id == $cate->id)
+                        {
+                        $cate->purchaseqty += $c->weight;
+                        $cate->purchaseamt += $c->total_point/100;
+                        }
+                        if($c->recycle_category_id == $cate->id)
+                        {
+                        $cate->purchaseqty += 0;
+                        $cate->purchaseamt += 0;
+                        }
+                    }
+                }
+            }
+            foreach($category as $c)
+            {
+                if($c->balqty + $c->purchaseqty == 0)
+                {
+                    $c->avgcost = 0;
+                }
+                else
+                {
+                    $c->avgcost = round(($c->balamt+$c->purchaseamt) / ($c->balqty + $c->purchaseqty),2);
+                }
+                $previous_waste_clearance_item = DB::table('waste_clearance_schedule_item')->join('recycle_type','waste_clearance_schedule_item.recycle_type_id','=','recycle_type.id')
+                ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+                ->where('recycle_category.id',$c->id)
+                ->whereYear('waste_clearance_schedule_item.created_at','<',$currentYear)
+                ->select(DB::raw("SUM(waste_clearance_schedule_item.weight) as weight"))->get();
+                $current_waste_clearance_item = DB::table('waste_clearance_schedule_item')->join('recycle_type','waste_clearance_schedule_item.recycle_type_id','=','recycle_type.id')
+                ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+                ->where('recycle_category.id',$c->id)
+                ->whereMonth('waste_clearance_schedule_item.created_at','<=',$currentMonth)
+                ->whereYear('waste_clearance_schedule_item.created_at','=',$currentYear)
+                ->select(DB::raw("SUM(waste_clearance_schedule_item.weight) as weight"))->get();
+                $previous_weight = 0;
+                $current_weight = 0;
+                if(!($previous_waste_clearance_item->isEmpty()))
+                {
+                    $previous_weight = $previous_waste_clearance_item[0]->weight;
+                }
+                if(!($current_waste_clearance_item->isEmpty()))
+                {
+                    $current_weight = $current_waste_clearance_item[0]->weight;
+                }
+                $salesqty = round($previous_weight + $current_weight,2);
+                $c->salesqty = $salesqty;
+                $c->salesamt = round($c->salesqty * $c->avgcost,2);
+                $c->adjustqty = $c->salesqty - ($c->balqty + $c->purchaseqty);
+                $c->adjustamt = round($c->adjustqty * $c->avgcost,2);
+                $c->currentqty = round(($c->balqty + $c->purchaseamt) - ($c->salesamt + $c->adjustqty),2);
+                $c->currentamt = round($c->currentqty * $c->avgcost,2);
+
+            }
+
+            if(session()->has('monthinnum'))
+            {
+                $request->session()->forget('monthinnum');
+            }
+            else if(session()->has('month'))
+            {
+                $request->session()->forget('month');
+            }
+            else if(session()->has('year'))
+            {
+                $request->session()->forget('year');
+            }
+            session(['monthinnum' => $monthinnum]);
+            session(['month' => $month]);
+            session(['year'=>$year]);
+            return view('report.accounting.closing',compact('category'));
+        }
+        else
+        {
+            return redirect()->route('report.accounting.closingstock');
+        }
+    }
+
+    public function export_closingstock_csv()
+    {
+        return Excel::download(new ClosingStockTableExport,'ClosingStocks.csv');
     }
 }
