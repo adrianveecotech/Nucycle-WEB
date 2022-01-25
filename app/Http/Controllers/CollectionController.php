@@ -36,8 +36,13 @@ class CollectionController extends Controller
         $customer = DB::table('customer')->where('id',$collection->customer_id)->first();
         //$schedule = WasteClearanceSchedule::find($id);
         $company_info = ContactUsInfo::first();
-        $items = CollectionDetail::where('collection_id', $id)->join('recycle_type', 'recycle_type.id', '=', 'collection_detail.recycling_type_id')->get(['recycle_type.name', 'weight']);
-        return view('collection.receive', compact('collection', 'customer','id','company_info','items'));
+        $items = CollectionDetail::where('collection_id', $id)->join('recycle_type', 'recycle_type.id', '=', 'collection_detail.recycling_type_id')->get(['recycle_type.name', 'weight','total_point']);
+        $total = 0;
+        foreach($items as $i)
+        {
+           $total += $i->total_point;
+        }
+        return view('collection.receive', compact('collection', 'customer','id','company_info','items','total'));
     }
     public function view($id)
     {

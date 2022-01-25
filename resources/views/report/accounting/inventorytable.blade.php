@@ -29,8 +29,8 @@
                         @foreach($category as $c)
                         <tr>
                             <td>{{$c->name}}</td>
-                            <td>{{number_format($c->balqty, 2, '.', '')}}</td>
-                            <td>RM{{number_format($c->balamt, 2, '.', '')}}</td>
+                            <td>{{number_format((float)$c->balqty, 2, '.', '')}}</td>
+                            <td>RM{{number_format((float)$c->balamt, 2, '.', '')}}</td>
                             <td>{{number_format($c->purchaseqty, 2, '.', '')}}</td>
                             <td>RM{{number_format($c->purchaseamt, 2, '.', '')}}</td>
                             <td>RM{{number_format($c->avgcost, 2, '.', '')}}</td>

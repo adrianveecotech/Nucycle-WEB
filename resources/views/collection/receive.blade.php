@@ -37,6 +37,9 @@
                             <td>
                                 <p><strong>Qty</strong></p>
                             </td>
+                            <td>
+                                <p><strong>Points Collected</strong></p>
+                            </td>
                         </tr>
                         @foreach($items as $index => $item)
                         <tr>
@@ -52,8 +55,19 @@
                             <td>
                                 <p>{{number_format((float)$item->weight, 2, '.', '')}}</p>
                             </td>
+                            <td>
+                                <p>{{number_format((float)$item->total_point, 2, '.', '')}}</p>
+                            </td>
                         </tr>
                         @endforeach
+                        <tr>
+                            <td colspan = "4">
+                                <p style="text-align: right;"><strong>Total Points: </strong></p>
+                            </td>
+                            <td>
+                                <p>{{number_format((float)$total, 2, '.', '')}}</p>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
                 <p>&nbsp;</p>
