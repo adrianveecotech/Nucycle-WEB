@@ -174,7 +174,7 @@
         function sendFile(file, that) {
             data = new FormData();
             data.append("file", file);
-            data.append('locations', 'Activity_image');
+            data.append('locations', 'activity_image');
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': '{!! csrf_token() !!}'
