@@ -5097,6 +5097,7 @@ class ReportController extends Controller
                         ->where('collection.status','=','1')
                         ->whereMonth('collection_detail.created_at','=',$currentMonth)
                         ->whereYear('collection_detail.created_at','=',$currentYear)
+                        ->select(DB::raw("collection_detail.*, recycle_type.*, recycle_category.*, collection.*, collection_detail.total_point as total_point, collection_detail.id as id"))
                         ->get();
             //dd($collection2);
             $category = DB::table('recycle_category')->select('id','name')->get();
