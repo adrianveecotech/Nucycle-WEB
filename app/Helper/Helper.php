@@ -180,7 +180,7 @@ class Helper
             $mail->AddReplyTo("noreply@nucycle.com.my", "NuCycle");
             $mail->Subject    = $subject;
             $mail->Body = $body;
-            $mail->Send();
+            return($mail->Send());
         } catch (Exception $e) {
         }
     }

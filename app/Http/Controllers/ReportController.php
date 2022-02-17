@@ -4432,9 +4432,8 @@ class ReportController extends Controller
         foreach($epoints as $e)
         {
             $currentMonthBalance = DB::table('customer_point_transaction')->where('customer_id',$e->cus_id)->whereMonth('created_at',$currentMonth)
-            ->whereYear('created_at',$currentYear)->sum('balance');
-            $totalBalance = DB::table('customer_point_transaction')->where('customer_id',$e->cus_id)->sum('balance');
-
+            ->whereYear('created_at',$currentYear)->where('status','!=',2)->sum('balance');
+            $totalBalance = DB::table('customer_point_transaction')->where('customer_id',$e->cus_id)->where('status','!=',2)->sum('balance');
             if(is_null($currentMonthBalance))
             {
                 $currentMonthBalance = 0;
@@ -4934,6 +4933,7 @@ class ReportController extends Controller
                         ->where('collection.status','=','1')
                         ->whereMonth('collection_detail.created_at','=',$currentMonth)
                         ->whereYear('collection_detail.created_at','=',$currentYear)
+                        ->select(DB::raw("collection_detail.*, recycle_type.*, recycle_category.*, collection.*, collection_detail.total_point as total_point, collection_detail.id as id"))
                         ->get();
             //dd($collection2);
             $category = DB::table('recycle_category')->select('id','name')->get();

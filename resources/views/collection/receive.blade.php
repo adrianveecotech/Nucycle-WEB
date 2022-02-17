@@ -15,6 +15,7 @@
                 <p>&nbsp;</p>
                 <p style="text-align: center;">{{Helper::lpadClearanceId_PO($collection->id)}}</p>
                 <p style="text-align: right;">Date: {{explode(' ',$collection->created_at)[0]}}</p>
+                <p>User ID: {{$customer->membership_id}}</p>
                 @if($customer->name != null)
                 <p>Customer: {{$customer->name}}</p>
                 @endif

@@ -165,21 +165,19 @@
                             <p>Mobile</p>
                         </a>
                     </li>
+                </ul>
             </li>
-        </ul>
-
-    </li>
-    <li class="nav-item">
-        <a class="nav-link {{Request::is('report/app-performance/*') ||  Request::is('report/app-performance') ? 'active' : '' }}" href="{!! route('report.app_performance.demography') !!}">
-            <p>App Performance</p>
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link {{Request::is('report/reward-performance/*') ||  Request::is('report/reward-performance') || Request::is('report/ads-click/*') ||  Request::is('report/ads-click') ? 'active' : '' }}" href="{!! route('report.reward_performance') !!}">
-            <p>Reward Performance</p>
-        </a>
-    </li>
-    <li class="nav-item has-treeview {{ Request::is('report/accounting/nuppurchase*') ||  Request::is('report/accounting/nuppurchase') || Request::is('report/accounting/epoint*') ||  Request::is('report/accounting/epoint') || Request::is('report/accounting/evoucher*') ||  Request::is('report/accounting/evoucher') || Request::is('report/accounting/nupsales*') ||  Request::is('report/accounting/nupsales') || Request::is('report/accounting/inventory*') ||  Request::is('report/accounting/inventory') || Request::is('report/accounting/closingstock*') ||  Request::is('report/accounting/closingstock') ? 'menu-open' : '' }}">
+            <li class="nav-item">
+                <a class="nav-link {{Request::is('report/app-performance/*') ||  Request::is('report/app-performance') ? 'active' : '' }}" href="{!! route('report.app_performance.demography') !!}">
+                    <p>App Performance</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{Request::is('report/reward-performance/*') ||  Request::is('report/reward-performance') || Request::is('report/ads-click/*') ||  Request::is('report/ads-click') ? 'active' : '' }}" href="{!! route('report.reward_performance') !!}">
+                    <p>Reward Performance</p>
+                </a>
+            </li>
+            <li class="nav-item has-treeview {{ Request::is('report/accounting/nuppurchase*') ||  Request::is('report/accounting/nuppurchase') || Request::is('report/accounting/epoint*') ||  Request::is('report/accounting/epoint') || Request::is('report/accounting/evoucher*') ||  Request::is('report/accounting/evoucher') || Request::is('report/accounting/nupsales*') ||  Request::is('report/accounting/nupsales') || Request::is('report/accounting/inventory*') ||  Request::is('report/accounting/inventory') || Request::is('report/accounting/closingstock*') ||  Request::is('report/accounting/closingstock') ? 'menu-open' : '' }}">
         <a href="#" class="nav-link {{Request::is('report/accounting/nuppurchase*') ||  Request::is('report/accounting/nuppurchase') ||  Request::is('report/accounting/epoint*') ||  Request::is('report/accounting/epoint') || Request::is('report/accounting/evoucher*') ||  Request::is('report/accounting/evoucher') || Request::is('report/accounting/nupsales*') ||  Request::is('report/accounting/nupsales') || Request::is('report/accounting/inventory*') ||  Request::is('report/accounting/inventory') || Request::is('report/accounting/closingstock*') ||  Request::is('report/accounting/closingstock') ? 'active' : '' }}">
             <p>Accounting <i class="right fa fa-angle-down"></i>
             </p>
@@ -215,6 +213,8 @@
                     <p>Closing Stocks</p>
                 </a>
             </li>
+    </li>
+        </ul>
     </li>
     </ul>
     </li>

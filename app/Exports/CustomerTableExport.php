@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use Maatwebsite\Excel\Events\AfterSheet;
+use App\Models\LoginActivitiy;
 
 class CustomerTableExport implements FromCollection,WithHeadings,WithEvents, WithCustomStartCell
 {
@@ -62,6 +63,7 @@ class CustomerTableExport implements FromCollection,WithHeadings,WithEvents, Wit
         $customer_list = [];
         foreach($customers as $c)
         {
+            $last_login = LoginActivitiy::where('user_id',$c->user_id)->orderBy('created_at','desc')->first();
             $cus = (object)[];
             $cus->id = $c->user_id;
             $cus->email = $c->email;
@@ -76,8 +78,7 @@ class CustomerTableExport implements FromCollection,WithHeadings,WithEvents, Wit
             {
                 $cus->indi = "Company";
             }
-            $cus->created = $c->created_at;
-            $cus->lastlogin = $c->updated_at;
+            $cus->lastlogin = $last_login? $last_login->created_at->format('Y-m-d H:i:s') : '' ;
             array_push($customer_list,$cus);
         }
         return collect($customer_list);

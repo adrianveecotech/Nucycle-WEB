@@ -72,16 +72,16 @@ class EPointTableExport implements FromCollection,WithHeadings,WithEvents, WithC
                     ->select('customer.id as cus_id','customer.membership_id as user_id','customer.name as user_name')
                     ->distinct()
                     ->get();
-
         foreach($epoints as $e)
         {
+            $number = cal_days_in_month(CAL_GREGORIAN, $currentMonth, $currentYear);
+            $date = $currentYear . '-' . $currentMonth . '-' . $number;
             $currentMonthBalance = DB::table('customer_point_transaction')->where('customer_id',$e->cus_id)->whereMonth('created_at',$currentMonth)
-            ->whereYear('created_at',$currentYear)->sum('balance');
+            ->whereYear('created_at',$currentYear)->where('status','!=',2)->sum('balance');
             $totalBalance = DB::table('customer_point_transaction')->where('customer_id',$e->cus_id)
-            ->whereMonth('created_at','<=',$currentMonth)
-            ->whereYear('created_at','<=',$currentYear)
+            ->whereDate('created_at','<=',$date)
+            ->where('status','!=',2)
             ->sum('balance');
-
             if(is_null($currentMonthBalance))
             {
                 $currentMonthBalance = 0;
