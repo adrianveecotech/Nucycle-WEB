@@ -27,7 +27,6 @@ class CustomerTableExport implements FromCollection,WithHeadings,WithEvents, Wit
             'City',      
             'State',      
             'Individual/Company',
-            'Created At',
             'Last Login Date'       
         ];
     }
