@@ -70,6 +70,7 @@ class EPointTableExport implements FromCollection,WithHeadings,WithEvents, WithC
         }
         $epoints = DB::table('collection')->join('customer','collection.customer_id','=','customer.id')
                     ->select('customer.id as cus_id','customer.membership_id as user_id','customer.name as user_name')
+                    ->where('collection.status','=','1')
                     ->distinct()
                     ->get();
         foreach($epoints as $e)
@@ -96,6 +97,7 @@ class EPointTableExport implements FromCollection,WithHeadings,WithEvents, WithC
 
             $monthlyearn = DB::table('collection')
             ->where('customer_id',$e->cus_id)
+            ->where('collection.status','=','1')
             ->whereMonth('created_at',$currentMonth)
             ->whereYear('created_at',$currentYear)
             ->sum('total_point');
