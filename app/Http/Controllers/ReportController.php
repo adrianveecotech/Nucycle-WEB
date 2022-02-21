@@ -5024,7 +5024,7 @@ class ReportController extends Controller
                 $c->salesamt = round($c->salesqty * $c->avgcost,2);
                 $c->adjustqty = ((float)$c->balqty + $c->purchaseqty) - $c->salesqty;
                 $c->adjustamt = round($c->adjustqty * $c->avgcost,2);
-                $c->currentqty = round(((float)$c->balqty + $c->purchaseamt) - ($c->salesamt + $c->adjustqty),2);
+                $c->currentqty = round((float)$c->balqty + $c->purchaseamt - $c->salesamt + $c->adjustqty,2);
                 $c->currentamt = round($c->currentqty * $c->avgcost,2);
 
             }
@@ -5110,6 +5110,14 @@ class ReportController extends Controller
                         ->whereYear('collection_detail.created_at','=',$currentYear)
                         ->select(DB::raw("collection_detail.*, recycle_type.*, recycle_category.*, collection.*, collection_detail.total_point as total_point, collection_detail.id as id"))
                         ->get();
+            $prevMonthCollection = DB::table('collection_detail')->join('recycle_type','collection_detail.recycling_type_id','=','recycle_type.id')
+                        ->join('recycle_category','recycle_type.recycle_category_id','=','recycle_category.id')
+                        ->join('collection','collection_detail.collection_id','=','collection.id')
+                        ->where('collection.status','=','1')
+                        ->whereMonth('collection_detail.created_at','=',$previousMonth)
+                        ->whereYear('collection_detail.created_at','=',$currentYear)
+                        ->select(DB::raw("collection_detail.*, recycle_type.*, recycle_category.*, collection.*, collection_detail.total_point as total_point, collection_detail.id as id"))
+                        ->get();
             //dd($collection2);
             $category = DB::table('recycle_category')->select('id','name')->get();
             
@@ -5188,7 +5196,7 @@ class ReportController extends Controller
                 $c->salesamt = round($c->salesqty * $c->avgcost,2);
                 $c->adjustqty = ((float)$c->balqty + $c->purchaseqty) - $c->salesqty;
                 $c->adjustamt = round($c->adjustqty * $c->avgcost,2);
-                $c->currentqty = round(((float)$c->balqty + $c->purchaseamt) - ($c->salesamt + $c->adjustqty),2);
+                $c->currentqty = round((float)$c->balqty + $c->purchaseqty - $c->salesqty + $c->adjustqty,2);
                 $c->currentamt = round($c->currentqty * $c->avgcost,2);
 
             }
@@ -5209,7 +5217,8 @@ class ReportController extends Controller
             session(['monthinnum' => $monthinnum]);
             session(['month' => $month]);
             session(['year'=>$year]);
-            return view('report.accounting.inventory',compact('category'));
+            $date = $year.' '.$month;
+            return view('report.accounting.inventory',compact('category','date'));
         }
         else
         {

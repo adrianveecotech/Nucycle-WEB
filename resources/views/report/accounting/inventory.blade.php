@@ -7,6 +7,7 @@
     <div class="row mb-2">
       <div class="col-sm-6">
         <h1 class="m-0 text-dark">Inventory<small class="ml-3 mr-3"></small></h1>
+        <h6 class="m-0 text-dark">{{isset($date) ? $date : ''}}<small class="ml-3 mr-3"></small></h6>
       </div><!-- /.col -->
 
     </div><!-- /.row -->
