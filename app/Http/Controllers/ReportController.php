@@ -5373,7 +5373,7 @@ class ReportController extends Controller
                 $c->salesamt = round($c->salesqty * $c->avgcost,2);
                 $c->adjustqty = ((float)$c->balqty + $c->purchaseqty) - $c->salesqty;
                 $c->adjustamt = round($c->adjustqty * $c->avgcost,2);
-                $c->currentqty = round(((float)$c->balqty + $c->purchaseamt) - ($c->salesamt + $c->adjustqty),2);
+                $c->currentqty = round((float)$c->balqty + $c->purchaseamt - $c->salesamt + $c->adjustqty,2);
                 $c->currentamt = round($c->currentqty * $c->avgcost,2);
 
             }
@@ -5539,7 +5539,7 @@ class ReportController extends Controller
                 $c->salesamt = round($c->salesqty * $c->avgcost,2);
                 $c->adjustqty = ((float)$c->balqty + $c->purchaseqty) - $c->salesqty;
                 $c->adjustamt = round($c->adjustqty * $c->avgcost,2);
-                $c->currentqty = round(((float)$c->balqty + $c->purchaseamt) - ($c->salesamt + $c->adjustqty),2);
+                $c->currentqty = round((float)$c->balqty + $c->purchaseamt - $c->salesamt + $c->adjustqty,2);
                 $c->currentamt = round($c->currentqty * $c->avgcost,2);
 
             }
