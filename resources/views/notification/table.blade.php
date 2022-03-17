@@ -4,7 +4,15 @@
             <li>{!! \Session::get('successMsg') !!}</li>
         </ul>
     </div>
-    @endif
+@endif
+
+@if (\Session::has('failMsg'))
+    <div class="alert alert-danger">
+        <ul>
+            <li>{!! \Session::get('failMsg') !!}</li>
+        </ul>
+    </div>
+@endif
 
     <div class="row justify-content-center">
         <div class="col">
@@ -21,6 +29,7 @@
                                 <th><span>Time Set</span></th>
                                 <th><span>Time Sent</span></th>
                                 <th><span>Created At</span></th>
+                                <th><span>Action</span></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -33,6 +42,7 @@
                                 <td>{{$notification->time_set}}</td>
                                 <td>{{$notification->time_sent}}</td>
                                 <td>{{$notification->created_at}}</td>
+                                <td>@if($notification->status == 'draft')<a href="{{route('notification.cancel', ['id' => $notification->id])}}" class="btn btn-xs btn-danger"><i class="nav-icon fa fa-trash"></i></a>@endif</td>
                             </tr>
                             @endforeach
                         </tbody>

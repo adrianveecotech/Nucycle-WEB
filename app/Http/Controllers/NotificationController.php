@@ -38,6 +38,18 @@ class NotificationController extends Controller
         );
         Helper::webSendNotification($request);
 
-        return redirect()->route('notification.index')->with('successMsg', 'Notificaion is sent.');
+        return redirect()->route('notification.index')->with('successMsg', 'Notificaion is created.');
+    }
+
+    public function cancel($id){
+        $notification = Notification::where('id',$id)->first();
+        if($notification->status != 'draft'){
+            return redirect()->route('notification.index')->with('failMsg', 'Only notification with draft status can be deleted.');
+        }
+        $notification->status = 'cancelled';
+        $notification->save();
+
+        return redirect()->route('notification.index')->with('successMsg', 'Notification is cancelled.');
+
     }
 }

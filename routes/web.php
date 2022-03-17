@@ -148,6 +148,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
         Route::post('edit', 'NotificationController@content_edit_db')->name('notification.edit_db');
         Route::get('view/{id}', 'NotificationController@content_view')->name('notification.view');
         Route::post('insert', 'NotificationController@insert')->name('notification.insert_db');
+        Route::get('cancel/{id}', 'NotificationController@cancel')->name('notification.cancel');
     });
     Route::group(['prefix' => 'be_our_partner'], function () {
         Route::get('/', 'BeOurPartnerController@index')->name('be_our_partner.index');

@@ -6,7 +6,7 @@
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <h1 class="m-0 text-dark">Notification Sent<small class="ml-3 mr-3"></small></h1>
+        <h1 class="m-0 text-dark">Notification<small class="ml-3 mr-3"></small></h1>
       </div><!-- /.col -->
 
     </div><!-- /.row -->

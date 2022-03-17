@@ -49,12 +49,13 @@ class MailMerchantReportCommand extends Command
         foreach ($merchants as $merchant) {
             try {
                 $url = 'https://app.nucycle.com.my/merchant-report?secret_ki=51J3BLkKDKlGOEFRrOhlW4Vt4SzJqNtnVTKoYcPBTCuf0uD3wJyhnN0y4kV2xsR4pn8mAgIo4VDXXtc1GHpwWYka100QDHJ39uq&merchant_id=' . $merchant->id;
-                $file = 'merchant_report/' . str_replace(" ", "-", $merchant->name) . '_' . date('Y-M') . '.pdf';
+                $file = 'public/merchant_report/' . str_replace(" ", "-", $merchant->name) . '_' . date('Y-M') . '.pdf';
                 Browsershot::url($url)->setNodeBinary('/usr/bin/node')
                     ->setNpmBinary('/usr/bin/npm')->setChromePath("/node_modules/puppeteer/.local-chromium/linux-901912/chrome-linux/chrome")->noSandbox()->save($file);
                 $subject = "NuCycle Merchant Report For " . date('Y M');
                 $message = "Hi " . $merchant->name . ', Please find attached report for the month of ' . date('M Y') . '.';
                 $sent = Helper::sendEmail($merchant->email, $subject, $message, $file);
+                Helper::sendEmail('adrian@veecotech.com', $subject, $message, $file);
             } catch (\Exception $e) {
                 $sent = $e->getMessage();
             }

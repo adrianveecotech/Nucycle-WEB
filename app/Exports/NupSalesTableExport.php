@@ -14,7 +14,7 @@ class NupSalesTableExport implements FromCollection,WithHeadings,WithEvents, Wit
 {
     public function startCell(): string
     {
-        return 'A3';
+        return 'A4';
     }
 
     public function headings():array{
@@ -55,6 +55,24 @@ class NupSalesTableExport implements FromCollection,WithHeadings,WithEvents, Wit
 
                 $sheet->mergeCells('A2:G2');
                 $sheet->setCellValue('A2', "NUP Sales");
+                
+                $currentMonth = "";
+                $currentYear = "";
+                if (session()->has('monthinnum') && session()->has('year'))
+                {
+                    $currentMonth = session('monthinnum');
+                    $currentYear = session('year');
+                    $currentMonth = date("F", strtotime(date("Y") ."-". $currentMonth ."-01"));
+                }
+                else
+                {
+                    $current = Carbon::now();
+                    $currentMonth = $current->month;
+                    $currentYear = $current->year;
+                    $currentMonth = date("F", strtotime(date("Y") ."-". $currentMonth ."-01"));
+                }
+
+                $sheet->setCellValue('A3', $currentYear . '-' . $currentMonth);
      
                 $cellRange = 'A1:G2'; // All headers
                 $event->sheet->getDelegate()->getStyle($cellRange);

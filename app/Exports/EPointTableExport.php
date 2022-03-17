@@ -14,7 +14,7 @@ class EPointTableExport implements FromCollection,WithHeadings,WithEvents, WithC
 {
     public function startCell(): string
     {
-        return 'A3';
+        return 'A4';
     }
 
     public function headings():array{
@@ -43,6 +43,24 @@ class EPointTableExport implements FromCollection,WithHeadings,WithEvents, WithC
 
                 $sheet->mergeCells('A2:G2');
                 $sheet->setCellValue('A2', "e-POINT List");
+
+                $currentMonth = "";
+                $currentYear = "";
+                if (session()->has('monthinnum') && session()->has('year'))
+                {
+                    $currentMonth = session('monthinnum');
+                    $currentYear = session('year');
+                    $currentMonth = date("F", strtotime(date("Y") ."-". $currentMonth ."-01"));
+                }
+                else
+                {
+                    $current = Carbon::now();
+                    $currentMonth = $current->month;
+                    $currentYear = $current->year;
+                    $currentMonth = date("F", strtotime(date("Y") ."-". $currentMonth ."-01"));
+                }
+
+                $sheet->setCellValue('A3', $currentYear . '-' . $currentMonth);
                 
                 $cellRange = 'A1:G2'; // All headers
                 $event->sheet->getDelegate()->getStyle($cellRange);
@@ -150,7 +168,6 @@ class EPointTableExport implements FromCollection,WithHeadings,WithEvents, WithC
             }
             unset($e->cus_id);
         }
-        
         return collect($epoints);
     }
 }
