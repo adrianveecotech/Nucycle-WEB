@@ -5021,7 +5021,7 @@ class ReportController extends Controller
                 $c->adjustqty = $adjustment;
                 $c->adjustamt = round($c->adjustqty * $c->avgcost,2);
                 $c->currentqty = round((float)$c->balqty + $c->purchaseqty - $c->salesqty + $c->adjustqty,2);
-                $c->currentamt = round($c->currentqty * $c->avgcost,2);
+                $c->currentamt = round((float)$c->balamt + $c->purchaseamt - $c->salesamt + $c->adjustamt,2);
 
             }
         //dd($category);    
@@ -5189,7 +5189,7 @@ class ReportController extends Controller
                 $c->adjustqty = $adjustment;
                 $c->adjustamt = round($c->adjustqty * $c->avgcost,2);
                 $c->currentqty = round((float)$c->balqty + $c->purchaseqty - $c->salesqty + $c->adjustqty,2);
-                $c->currentamt = round($c->currentqty * $c->avgcost,2);
+                $c->currentamt = round((float)$c->balamt + $c->purchaseamt - $c->salesamt + $c->adjustamt,2);
 
             }
         //dd($category);
@@ -5364,7 +5364,7 @@ class ReportController extends Controller
                 $c->adjustqty = $adjustment;
                 $c->adjustamt = round($c->adjustqty * $c->avgcost,2);
                 $c->currentqty = round((float)$c->balqty + $c->purchaseqty - $c->salesqty + $c->adjustqty,2);
-                $c->currentamt = round($c->currentqty * $c->avgcost,2);
+                $c->currentamt = round((float)$c->balamt + $c->purchaseamt - $c->salesamt + $c->adjustamt,2);
 
             }
         //dd($category);    
@@ -5528,7 +5528,7 @@ class ReportController extends Controller
                 $c->adjustqty = $adjustment;
                 $c->adjustamt = round($c->adjustqty * $c->avgcost,2);
                 $c->currentqty = round((float)$c->balqty + $c->purchaseqty - $c->salesqty + $c->adjustqty,2);
-                $c->currentamt = round($c->currentqty * $c->avgcost,2);
+                $c->currentamt = round((float)$c->balamt + $c->purchaseamt - $c->salesamt + $c->adjustamt,2);
 
             }
 
