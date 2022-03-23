@@ -4989,14 +4989,19 @@ class ReportController extends Controller
             foreach($category as $c)
             {
                 $adjustment = 0;
+                $accumulated = 0;
                 foreach ($weeks as $key => $week) {
                     $category_id = $c->id;
-                    $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id where month(c.created_at) = $currentMonth and c.status = 1 and year(c.created_at) = $currentYear and day(c.created_at) >= $week[0] and day(c.created_at) <= $week[1] and status = 1 and rt.recycle_category_id = $category_id");
-
+                    if($key == 0){
+                        $accumulated = $c->balqty;
+                    }else{
+                        $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id where month(c.created_at) = $currentMonth and c.status = 1 and year(c.created_at) = $currentYear and day(c.created_at) >= $week[0] and day(c.created_at) <= $week[1] and status = 1 and rt.recycle_category_id = $category_id");
+                        $accumulated += $collectedWaste[0]->total;
+                    }
                     $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id where month(wcs.completed_at) = $currentMonth and year(wcs.completed_at) = $currentYear and day(wcs.completed_at) >= $week[0] and day(wcs.completed_at) <= $week[1] and wcs.status = 2 and rt.recycle_category_id = $category_id");
                     if($soldWaste[0]->total != 0)
                     {
-                        $adjustment += ($soldWaste[0]->total - $collectedWaste[0]->total);
+                        $adjustment += $soldWaste[0]->total - $accumulated;
                     }
                 }
                 //dd($c->balqty  + $c->purchaseqty);
@@ -5157,14 +5162,19 @@ class ReportController extends Controller
             foreach($category as $c)
             {
                 $adjustment = 0;
+                $accumulated = 0;
                 foreach ($weeks as $key => $week) {
                     $category_id = $c->id;
-                    $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id where month(c.created_at) = $currentMonth and c.status = 1 and year(c.created_at) = $currentYear and day(c.created_at) >= $week[0] and day(c.created_at) <= $week[1] and status = 1 and rt.recycle_category_id = $category_id");
-
+                    if($key == 0){
+                        $accumulated = $c->balqty;
+                    }else{
+                        $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id where month(c.created_at) = $currentMonth and c.status = 1 and year(c.created_at) = $currentYear and day(c.created_at) >= $week[0] and day(c.created_at) <= $week[1] and status = 1 and rt.recycle_category_id = $category_id");
+                        $accumulated += $collectedWaste[0]->total;
+                    }
                     $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id where month(wcs.completed_at) = $currentMonth and year(wcs.completed_at) = $currentYear and day(wcs.completed_at) >= $week[0] and day(wcs.completed_at) <= $week[1] and wcs.status = 2 and rt.recycle_category_id = $category_id");
                     if($soldWaste[0]->total != 0)
                     {
-                        $adjustment += ($soldWaste[0]->total - $collectedWaste[0]->total);
+                        $adjustment += $soldWaste[0]->total - $accumulated;
                     }
                 }
                 //dd($c->balqty  + $c->purchaseqty);
@@ -5330,14 +5340,20 @@ class ReportController extends Controller
             foreach($category as $c)
             {
                 $adjustment = 0;
+                $accumulated = 0;
                 foreach ($weeks as $key => $week) {
                     $category_id = $c->id;
-                    $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id where month(c.created_at) = $currentMonth and c.status = 1 and year(c.created_at) = $currentYear and day(c.created_at) >= $week[0] and day(c.created_at) <= $week[1] and status = 1 and rt.recycle_category_id = $category_id");
+                    if($key == 0){
+                        $accumulated = $c->balqty;
+                    }else{
+                        $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id where month(c.created_at) = $currentMonth and c.status = 1 and year(c.created_at) = $currentYear and day(c.created_at) >= $week[0] and day(c.created_at) <= $week[1] and status = 1 and rt.recycle_category_id = $category_id");
+                        $accumulated += $collectedWaste[0]->total;
+                    }
 
                     $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id where month(wcs.completed_at) = $currentMonth and year(wcs.completed_at) = $currentYear and day(wcs.completed_at) >= $week[0] and day(wcs.completed_at) <= $week[1] and wcs.status = 2 and rt.recycle_category_id = $category_id");
                     if($soldWaste[0]->total != 0)
                     {
-                        $adjustment += ($soldWaste[0]->total - $collectedWaste[0]->total);
+                        $adjustment += $soldWaste[0]->total - $accumulated;
                     }
                 }
 
@@ -5494,14 +5510,20 @@ class ReportController extends Controller
             foreach($category as $c)
             {
                 $adjustment = 0;
+                $accumulated = 0;
                 foreach ($weeks as $key => $week) {
                     $category_id = $c->id;
-                    $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id where month(c.created_at) = $currentMonth and c.status = 1 and year(c.created_at) = $currentYear and day(c.created_at) >= $week[0] and day(c.created_at) <= $week[1] and status = 1 and rt.recycle_category_id = $category_id");
+                    if($key == 0){
+                        $accumulated = $c->balqty;
+                    }else{
+                        $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id where month(c.created_at) = $currentMonth and c.status = 1 and year(c.created_at) = $currentYear and day(c.created_at) >= $week[0] and day(c.created_at) <= $week[1] and status = 1 and rt.recycle_category_id = $category_id");
+                        $accumulated += $collectedWaste[0]->total;
+                    }
 
                     $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id where month(wcs.completed_at) = $currentMonth and year(wcs.completed_at) = $currentYear and day(wcs.completed_at) >= $week[0] and day(wcs.completed_at) <= $week[1] and wcs.status = 2 and rt.recycle_category_id = $category_id");
                     if($soldWaste[0]->total != 0)
                     {
-                        $adjustment += ($soldWaste[0]->total - $collectedWaste[0]->total);
+                        $adjustment += $soldWaste[0]->total - $accumulated;
                     }
                 }
                 //dd($c->balqty  + $c->purchaseqty);
