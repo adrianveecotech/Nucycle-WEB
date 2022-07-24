@@ -1466,11 +1466,11 @@ class ReportController extends Controller
                     if ($hub_type == '') {
                         $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $value and c.status = 1 and year(c.created_at) = $curr_year  and status = 1");
 
-                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.completed_at) = $value and year(wcs.completed_at) = $curr_year and wcs.status = 2");
+                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.collection_time) = $value and year(wcs.collection_time) = $curr_year and wcs.status = 2");
                     } else {
                         $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $value and c.status = 1 and year(c.created_at) = $curr_year  and chb.type = $hub_type and status = 1");
 
-                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.completed_at) = $value and year(wcs.completed_at) = $curr_year and chb.type = $hub_type and wcs.status = 2");
+                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.collection_time) = $value and year(wcs.collection_time) = $curr_year and chb.type = $hub_type and wcs.status = 2");
                     }
 
                     $collectedWaste = array_column($collectedWaste, 'total')[0];
@@ -1486,11 +1486,11 @@ class ReportController extends Controller
                     if ($hub_type == '') {
                         $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and c.status = 1 and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1] and status = 1");
 
-                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.completed_at) = $curr_mon and year(wcs.completed_at) = $curr_year and day(wcs.completed_at) >= $value[0] and day(wcs.completed_at) <= $value[1] and wcs.status = 2");
+                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.collection_time) = $curr_mon and year(wcs.collection_time) = $curr_year and day(wcs.collection_time) >= $value[0] and day(wcs.collection_time) <= $value[1] and wcs.status = 2");
                     } else {
                         $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and c.status = 1 and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1] and chb.type = $hub_type and status = 1");
 
-                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.completed_at) = $curr_mon and year(wcs.completed_at) = $curr_year and day(wcs.completed_at) >= $value[0] and day(wcs.completed_at) <= $value[1] and chb.type = $hub_type and wcs.status = 2");
+                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.collection_time) = $curr_mon and year(wcs.collection_time) = $curr_year and day(wcs.collection_time) >= $value[0] and day(wcs.collection_time) <= $value[1] and chb.type = $hub_type and wcs.status = 2");
                     }
 
                     $collectedWaste = array_column($collectedWaste, 'total')[0];
@@ -1517,11 +1517,11 @@ class ReportController extends Controller
                     if ($hub_type == '') {
                         $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id where c.created_at >= '$date_from' and c.status = 1 and c.created_at <= '$date_to' and month(c.created_at) = $month and year(c.created_at) = $year and status = 1");
 
-                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where wcs.completed_at >= '$date_from' and wcs.completed_at <= '$date_to' and month(wcs.completed_at) = $month and year(wcs.completed_at) = $year and wcs.status = 2");
+                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where wcs.collection_time >= '$date_from' and wcs.collection_time <= '$date_to' and month(wcs.collection_time) = $month and year(wcs.collection_time) = $year and wcs.status = 2");
                     } else {
                         $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id where c.created_at >= '$date_from' and c.status = 1 and c.created_at <= '$date_to' and month(c.created_at) = $month and year(c.created_at) = $year  and chb.type = $hub_type and status = 1");
 
-                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where wcs.completed_at >= '$date_from' and wcs.completed_at <= '$date_to' and month(wcs.completed_at) = $month and year(wcs.completed_at) = $year and chb.type = $hub_type and wcs.status = 2");
+                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where wcs.collection_time >= '$date_from' and wcs.collection_time <= '$date_to' and month(wcs.collection_time) = $month and year(wcs.collection_time) = $year and chb.type = $hub_type and wcs.status = 2");
                     }
 
                     $collectedWaste = array_column($collectedWaste, 'total')[0];
@@ -1553,11 +1553,11 @@ class ReportController extends Controller
                         if ($hub_type == '') {
                             $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and c.status = 1 and year(c.created_at) = $curr_year and day(c.created_at) >= $value1[0] and day(c.created_at) <= $value1[1] and status = 1");
 
-                            $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.completed_at) = $curr_mon and year(wcs.completed_at) = $curr_year and day(wcs.completed_at) >= $value1[0] and day(wcs.completed_at) <= $value1[1] and wcs.status = 2");
+                            $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.collection_time) = $curr_mon and year(wcs.collection_time) = $curr_year and day(wcs.collection_time) >= $value1[0] and day(wcs.collection_time) <= $value1[1] and wcs.status = 2");
                         } else {
                             $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and c.status = 1 and year(c.created_at) = $curr_year and day(c.created_at) >= $value1[0] and day(c.created_at) <= $value1[1] and chb.type = $hub_type and status = 1");
 
-                            $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.completed_at) = $curr_mon and year(wcs.completed_at) = $curr_year and day(wcs.completed_at) >= $value1[0] and day(wcs.completed_at) <= $value1[1] and chb.type = $hub_type and wcs.status = 2");
+                            $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.collection_time) = $curr_mon and year(wcs.collection_time) = $curr_year and day(wcs.collection_time) >= $value1[0] and day(wcs.collection_time) <= $value1[1] and chb.type = $hub_type and wcs.status = 2");
                         }
 
                         $collectedWaste = array_column($collectedWaste, 'total')[0];
@@ -1599,7 +1599,7 @@ class ReportController extends Controller
                     $collectedWasteByMonth = array();
                     $soldWasteByMonth = array();
                     foreach ($months[0] as $value1) {
-                        $soldWasteEvery = DB::select("SELECT ifnull(round(sum(B.weight),2),0) as total, ch.hub_name as name FROM (SELECT wcs.id,wci.weight,wcs.collection_hub_id from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.completed_at) = $value1 and year(wcs.completed_at) = $curr_year and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and wcs.status = 2) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
+                        $soldWasteEvery = DB::select("SELECT ifnull(round(sum(B.weight),2),0) as total, ch.hub_name as name FROM (SELECT wcs.id,wci.weight,wcs.collection_hub_id from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.collection_time) = $value1 and year(wcs.collection_time) = $curr_year and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and wcs.status = 2) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
 
                         $collectedWasteEvery = DB::select("SELECT ifnull(round(sum(B.weight),2),0) as total, ch.hub_name as name FROM (SELECT c.id,cd.weight,c.collection_hub_id from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id left join recycle_type rt on cd.recycling_type_id = rt.id where month(c.created_at) = $value1 and c.status = 1 and year(c.created_at) = $curr_year and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and c.status = 1) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
 
@@ -1619,7 +1619,7 @@ class ReportController extends Controller
                     $collectedWasteByWeek = array();
                     $soldWasteByWeek = array();
                     foreach ($weeks as $value1) {
-                        $soldWasteEvery = DB::select("SELECT ifnull(round(sum(B.weight),2),0) as total, ch.hub_name as name FROM (SELECT wcs.id,wci.weight,wcs.collection_hub_id from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.completed_at) = $curr_mon and year(wcs.completed_at) = $curr_year and day(wcs.completed_at) >= $value1[0] and day(wcs.completed_at) <= $value1[1] and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and wcs.status = 2) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
+                        $soldWasteEvery = DB::select("SELECT ifnull(round(sum(B.weight),2),0) as total, ch.hub_name as name FROM (SELECT wcs.id,wci.weight,wcs.collection_hub_id from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.collection_time) = $curr_mon and year(wcs.collection_time) = $curr_year and day(wcs.collection_time) >= $value1[0] and day(wcs.collection_time) <= $value1[1] and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and wcs.status = 2) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
 
                         $collectedWasteEvery = DB::select("SELECT ifnull(round(sum(B.weight),2),0) as total, ch.hub_name as name FROM (SELECT c.id,cd.weight,c.collection_hub_id from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id left join recycle_type rt on cd.recycling_type_id = rt.id where month(c.created_at) = $curr_mon and c.status = 1 and year(c.created_at) = $curr_year and day(c.created_at) >= $value1[0] and day(c.created_at) <= $value1[1] and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and c.status = 1) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
 
@@ -1654,7 +1654,7 @@ class ReportController extends Controller
                         if ($index == 0)
                             array_push($labels, $dt->format('M Y'));
 
-                        $soldWasteEvery = DB::select("SELECT ifnull(round(sum(B.weight),2),0) as total, ch.hub_name as name FROM (SELECT wcs.id,wci.weight,wcs.collection_hub_id from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id left join collection_hub chb on chb.id = wcs.collection_hub_id where wcs.completed_at >= '$date_from' and wcs.completed_at <= '$date_to' and month(wcs.completed_at) = $month and year(wcs.completed_at) = $year and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and wcs.status = 2) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
+                        $soldWasteEvery = DB::select("SELECT ifnull(round(sum(B.weight),2),0) as total, ch.hub_name as name FROM (SELECT wcs.id,wci.weight,wcs.collection_hub_id from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id left join collection_hub chb on chb.id = wcs.collection_hub_id where wcs.collection_time >= '$date_from' and wcs.collection_time <= '$date_to' and month(wcs.collection_time) = $month and year(wcs.collection_time) = $year and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and wcs.status = 2) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
 
                         $collectedWasteEvery = DB::select("SELECT ifnull(round(sum(B.weight),2),0) as total, ch.hub_name as name FROM (SELECT c.id,cd.weight,c.collection_hub_id from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id left join recycle_type rt on cd.recycling_type_id = rt.id where c.created_at >= '$date_from' and c.status = 1 and c.created_at <= '$date_to' and month(c.created_at) = $month and year(c.created_at) = $year and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and c.status = 1) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
 
@@ -1692,7 +1692,7 @@ class ReportController extends Controller
                             if ($index == 0)
                                 array_push($labels, $dt->format('Y M ') . $weeksLabel[$key1]);
 
-                            $soldWasteEvery = DB::select("SELECT ifnull(round(sum(B.weight),2),0) as total, ch.hub_name as name FROM (SELECT wcs.id,wci.weight,wcs.collection_hub_id from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.completed_at) = $curr_mon and year(wcs.completed_at) = $curr_year and day(wcs.completed_at) >= $value1[0] and day(wcs.completed_at) <= $value1[1] and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and wcs.status = 2) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
+                            $soldWasteEvery = DB::select("SELECT ifnull(round(sum(B.weight),2),0) as total, ch.hub_name as name FROM (SELECT wcs.id,wci.weight,wcs.collection_hub_id from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.collection_time) = $curr_mon and year(wcs.collection_time) = $curr_year and day(wcs.collection_time) >= $value1[0] and day(wcs.collection_time) <= $value1[1] and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and wcs.status = 2) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
 
                             $collectedWasteEvery = DB::select("SELECT ifnull(round(sum(B.weight),2),0) as total, ch.hub_name as name FROM (SELECT c.id,cd.weight,c.collection_hub_id from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id left join recycle_type rt on cd.recycling_type_id = rt.id where month(c.created_at) = $curr_mon and c.status = 1 and year(c.created_at) = $curr_year and day(c.created_at) >= $value1[0] and day(c.created_at) <= $value1[1] and rt.recycle_category_id = $value->id and chb.hub_state_id = $state_id and chb.type = $hub_type and c.status = 1) AS B RIGHT JOIN collection_hub ch on ch.id = B.collection_hub_id where ch.hub_state_id = $state_id and ch.type = $hub_type group by ch.id,ch.hub_name order by ch.id");
 
@@ -4130,11 +4130,11 @@ class ReportController extends Controller
                     if ($hub_type == '') {
                         $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $value and year(c.created_at) = $curr_year and c.status = 1 and c.collection_hub_id = $collection_hub_id");
 
-                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.completed_at) = $value and year(wcs.completed_at) = $curr_year and wcs.status = 2 and wcs.collection_hub_id = $collection_hub_id");
+                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.collection_time) = $value and year(wcs.collection_time) = $curr_year and wcs.status = 2 and wcs.collection_hub_id = $collection_hub_id");
                     } else {
                         $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $value and year(c.created_at) = $curr_year  and chb.type = $hub_type and c.status = 1 and c.collection_hub_id = $collection_hub_id");
 
-                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.completed_at) = $value and year(wcs.completed_at) = $curr_year and chb.type = $hub_type and wcs.status = 2 and wcs.collection_hub_id = $collection_hub_id");
+                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.collection_time) = $value and year(wcs.collection_time) = $curr_year and chb.type = $hub_type and wcs.status = 2 and wcs.collection_hub_id = $collection_hub_id");
                     }
 
                     $collectedWaste = array_column($collectedWaste, 'total')[0];
@@ -4150,11 +4150,11 @@ class ReportController extends Controller
                     if ($hub_type == '') {
                         $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1] and c.status = 1 and c.collection_hub_id = $collection_hub_id");
 
-                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.completed_at) = $curr_mon and year(wcs.completed_at) = $curr_year and day(wcs.completed_at) >= $value[0] and day(wcs.completed_at) <= $value[1] and wcs.status = 2 and wcs.collection_hub_id = $collection_hub_id");
+                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.collection_time) = $curr_mon and year(wcs.collection_time) = $curr_year and day(wcs.collection_time) >= $value[0] and day(wcs.collection_time) <= $value[1] and wcs.status = 2 and wcs.collection_hub_id = $collection_hub_id");
                     } else {
                         $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value[0] and day(c.created_at) <= $value[1] and chb.type = $hub_type and c.status = 1 and c.collection_hub_id = $collection_hub_id");
 
-                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.completed_at) = $curr_mon and year(wcs.completed_at) = $curr_year and day(wcs.completed_at) >= $value[0] and day(wcs.completed_at) <= $value[1] and chb.type = $hub_type and wcs.status = 2 and wcs.collection_hub_id = $collection_hub_id");
+                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.collection_time) = $curr_mon and year(wcs.collection_time) = $curr_year and day(wcs.collection_time) >= $value[0] and day(wcs.collection_time) <= $value[1] and chb.type = $hub_type and wcs.status = 2 and wcs.collection_hub_id = $collection_hub_id");
                     }
 
                     $collectedWaste = array_column($collectedWaste, 'total')[0];
@@ -4181,11 +4181,11 @@ class ReportController extends Controller
                     if ($hub_type == '') {
                         $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id where c.created_at >= '$date_from' and c.created_at <= '$date_to' and month(c.created_at) = $month and year(c.created_at) = $year and c.status = 1 and c.collection_hub_id = $collection_hub_id");
 
-                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where wcs.completed_at >= '$date_from' and wcs.completed_at <= '$date_to' and month(wcs.completed_at) = $month and year(wcs.completed_at) = $year and wcs.status = 2 and wcs.collection_hub_id = $collection_hub_id");
+                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where wcs.collection_time >= '$date_from' and wcs.collection_time <= '$date_to' and month(wcs.collection_time) = $month and year(wcs.collection_time) = $year and wcs.status = 2 and wcs.collection_hub_id = $collection_hub_id");
                     } else {
                         $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id where c.created_at >= '$date_from' and c.created_at <= '$date_to' and month(c.created_at) = $month and year(c.created_at) = $year  and chb.type = $hub_type and c.status = 1 and c.collection_hub_id = $collection_hub_id");
 
-                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where wcs.completed_at >= '$date_from' and wcs.completed_at <= '$date_to' and month(wcs.completed_at) = $month and year(wcs.completed_at) = $year and chb.type = $hub_type and wcs.status = 2 and wcs.collection_hub_id = $collection_hub_id");
+                        $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where wcs.collection_time >= '$date_from' and wcs.collection_time <= '$date_to' and month(wcs.collection_time) = $month and year(wcs.collection_time) = $year and chb.type = $hub_type and wcs.status = 2 and wcs.collection_hub_id = $collection_hub_id");
                     }
 
                     $collectedWaste = array_column($collectedWaste, 'total')[0];
@@ -4217,11 +4217,11 @@ class ReportController extends Controller
                         if ($hub_type == '') {
                             $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value1[0] and day(c.created_at) <= $value1[1] and c.status = 1 and c.collection_hub_id = $collection_hub_id");
 
-                            $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.completed_at) = $curr_mon and year(wcs.completed_at) = $curr_year and day(wcs.completed_at) >= $value1[0] and day(wcs.completed_at) <= $value1[1] and wcs.status = 2 and wcs.collection_hub_id = $collection_hub_id");
+                            $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.collection_time) = $curr_mon and year(wcs.collection_time) = $curr_year and day(wcs.collection_time) >= $value1[0] and day(wcs.collection_time) <= $value1[1] and wcs.status = 2 and wcs.collection_hub_id = $collection_hub_id");
                         } else {
                             $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join collection_hub chb on chb.id = c.collection_hub_id where month(c.created_at) = $curr_mon and year(c.created_at) = $curr_year and day(c.created_at) >= $value1[0] and day(c.created_at) <= $value1[1] and chb.type = $hub_type and c.status = 1 and c.collection_hub_id = $collection_hub_id");
 
-                            $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.completed_at) = $curr_mon and year(wcs.completed_at) = $curr_year and day(wcs.completed_at) >= $value1[0] and day(wcs.completed_at) <= $value1[1] and chb.type = $hub_type and wcs.status = 2 and wcs.collection_hub_id = $collection_hub_id");
+                            $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join collection_hub chb on chb.id = wcs.collection_hub_id where month(wcs.collection_time) = $curr_mon and year(wcs.collection_time) = $curr_year and day(wcs.collection_time) >= $value1[0] and day(wcs.collection_time) <= $value1[1] and chb.type = $hub_type and wcs.status = 2 and wcs.collection_hub_id = $collection_hub_id");
                         }
 
                         $collectedWaste = array_column($collectedWaste, 'total')[0];
@@ -4564,18 +4564,14 @@ class ReportController extends Controller
             foreach($epoints as $e)
             {
                 $currentMonthBalance = DB::table('customer_point_transaction')->where('customer_id',$e->cus_id)->whereMonth('created_at',$currentMonth)
-                ->where('status','!=',2)
-                ->whereYear('created_at',$currentYear)->sum('balance');
-
+                ->whereYear('created_at',$currentYear)->sum('point');
                 $totalBalance = DB::table('customer_point_transaction')->where('customer_id',$e->cus_id)
                 ->whereMonth('created_at','<=',$currentMonth)
                 ->whereYear('created_at','=',$currentYear)
-                ->where('status','!=',2)
-                ->sum('balance');
+                ->sum('point');
                 $previousTotalBalance = DB::table('customer_point_transaction')->where('customer_id',$e->cus_id)
                 ->whereYear('created_at','<',$currentYear)
-                ->where('status','!=',2)
-                ->sum('balance');
+                ->sum('point');
                 $totalBalance = $totalBalance + $previousTotalBalance;
                 if(is_null($currentMonthBalance))
                 {
@@ -4793,10 +4789,11 @@ class ReportController extends Controller
                 $product_des = [];
                 $do_qty = [];
                 $waste_clearance_schedule_item = DB::table('waste_clearance_schedule_item')
+                                                ->leftJoin('waste_clearance_schedule','waste_clearance_schedule_item.waste_clearance_schedule_id','=','waste_clearance_schedule.id')
                                                 ->select('recycle_type_id as type_id','weight')
                                                 ->where('waste_clearance_schedule_id',$n->do_num)
-                                                ->whereMonth('waste_clearance_schedule_item.created_at',$monthinnum)
-                                                ->whereYear('waste_clearance_schedule_item.created_at',$year)
+                                                ->whereMonth('waste_clearance_schedule.collection_time',$monthinnum)
+                                                ->whereYear('waste_clearance_schedule.collection_time',$year)
                                                 ->get();
                 foreach($waste_clearance_schedule_item as $item)
                 {
@@ -4998,7 +4995,7 @@ class ReportController extends Controller
                         $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id where month(c.created_at) = $currentMonth and c.status = 1 and year(c.created_at) = $currentYear and day(c.created_at) >= $week[0] and day(c.created_at) <= $week[1] and status = 1 and rt.recycle_category_id = $category_id");
                         $accumulated += $collectedWaste[0]->total;
                     }
-                    $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id where month(wcs.completed_at) = $currentMonth and year(wcs.completed_at) = $currentYear and day(wcs.completed_at) >= $week[0] and day(wcs.completed_at) <= $week[1] and wcs.status = 2 and rt.recycle_category_id = $category_id");
+                    $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id where month(wcs.collection_time) = $currentMonth and year(wcs.collection_time) = $currentYear and day(wcs.collection_time) >= $week[0] and day(wcs.collection_time) <= $week[1] and wcs.status = 2 and rt.recycle_category_id = $category_id");
                     if($soldWaste[0]->total != 0)
                     {
                         $adjustment += $soldWaste[0]->total - $accumulated;
@@ -5171,7 +5168,7 @@ class ReportController extends Controller
                         $collectedWaste = DB::select("SELECT IFNULL(round(sum(cd.weight),2),0) as total from collection c left join collection_detail cd on c.id = cd.collection_id left join recycle_type rt on cd.recycling_type_id = rt.id where month(c.created_at) = $currentMonth and c.status = 1 and year(c.created_at) = $currentYear and day(c.created_at) >= $week[0] and day(c.created_at) <= $week[1] and status = 1 and rt.recycle_category_id = $category_id");
                         $accumulated += $collectedWaste[0]->total;
                     }
-                    $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id where month(wcs.completed_at) = $currentMonth and year(wcs.completed_at) = $currentYear and day(wcs.completed_at) >= $week[0] and day(wcs.completed_at) <= $week[1] and wcs.status = 2 and rt.recycle_category_id = $category_id");
+                    $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id where month(wcs.collection_time) = $currentMonth and year(wcs.collection_time) = $currentYear and day(wcs.collection_time) >= $week[0] and day(wcs.collection_time) <= $week[1] and wcs.status = 2 and rt.recycle_category_id = $category_id");
                     if($soldWaste[0]->total != 0)
                     {
                         $adjustment += $soldWaste[0]->total - $accumulated;
@@ -5350,7 +5347,7 @@ class ReportController extends Controller
                         $accumulated += $collectedWaste[0]->total;
                     }
 
-                    $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id where month(wcs.completed_at) = $currentMonth and year(wcs.completed_at) = $currentYear and day(wcs.completed_at) >= $week[0] and day(wcs.completed_at) <= $week[1] and wcs.status = 2 and rt.recycle_category_id = $category_id");
+                    $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id where month(wcs.collection_time) = $currentMonth and year(wcs.collection_time) = $currentYear and day(wcs.collection_time) >= $week[0] and day(wcs.collection_time) <= $week[1] and wcs.status = 2 and rt.recycle_category_id = $category_id");
                     if($soldWaste[0]->total != 0)
                     {
                         $adjustment += $soldWaste[0]->total - $accumulated;
@@ -5520,7 +5517,7 @@ class ReportController extends Controller
                         $accumulated += $collectedWaste[0]->total;
                     }
 
-                    $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id where month(wcs.completed_at) = $currentMonth and year(wcs.completed_at) = $currentYear and day(wcs.completed_at) >= $week[0] and day(wcs.completed_at) <= $week[1] and wcs.status = 2 and rt.recycle_category_id = $category_id");
+                    $soldWaste = DB::select("SELECT IFNULL(round(sum(wci.weight),2),0) as total from waste_clearance_schedule wcs left join waste_clearance_item wci on wcs.id = wci.waste_clearance_schedule_id left join recycle_type rt on wci.recycle_type_id = rt.id where month(wcs.collection_time) = $currentMonth and year(wcs.collection_time) = $currentYear and day(wcs.collection_time) >= $week[0] and day(wcs.collection_time) <= $week[1] and wcs.status = 2 and rt.recycle_category_id = $category_id");
                     if($soldWaste[0]->total != 0)
                     {
                         $adjustment += $soldWaste[0]->total - $accumulated;

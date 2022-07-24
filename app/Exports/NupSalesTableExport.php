@@ -105,10 +105,11 @@ class NupSalesTableExport implements FromCollection,WithHeadings,WithEvents, Wit
                 $product_des = [];
                 $do_qty = [];
                 $waste_clearance_schedule_item = DB::table('waste_clearance_schedule_item')
+                                                ->leftJoin('waste_clearance_schedule','waste_clearance_schedule_item.waste_clearance_schedule_id','=','waste_clearance_schedule.id')
                                                 ->select('recycle_type_id as type_id','weight')
                                                 ->where('waste_clearance_schedule_id',$n->do_num)
-                                                ->whereMonth('waste_clearance_schedule_item.created_at',$currentMonth)
-                                                ->whereYear('waste_clearance_schedule_item.created_at',$currentYear)
+                                                ->whereMonth('waste_clearance_schedule.collection_time',$currentMonth)
+                                                ->whereYear('waste_clearance_schedule.collection_time',$currentYear)
                                                 ->get();
                 foreach($waste_clearance_schedule_item as $item)
                 {

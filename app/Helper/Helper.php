@@ -174,7 +174,7 @@ class Helper
             if ($attachment)
                 $mail->addAttachment($attachment);
             $mail->Username = "noreply@nucycle.com.my";
-            $mail->Password = "N0rep1y@LgMy99";
+            $mail->Password = "Zx#9cl68";
             $mail->FromName = "NuCycle";
             $mail->SetFrom("noreply@nucycle.com.my", "NuCycle");
             $mail->AddReplyTo("noreply@nucycle.com.my", "NuCycle");
